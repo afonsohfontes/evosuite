@@ -1536,13 +1536,13 @@ public class Properties {
         EXCEPTION, DEFUSE, ALLDEFS, BRANCH, CBRANCH, STRONGMUTATION, WEAKMUTATION,
         MUTATION, STATEMENT, RHO, AMBIGUITY, IBRANCH, READABILITY,
         ONLYBRANCH, ONLYMUTATION, METHODTRACE, METHOD, METHODNOEXCEPTION, LINE, ONLYLINE, OUTPUT, INPUT,
-        TRYCATCH
+        TRYCATCH, PRIVATEMETHOD;
     }
 
     @Parameter(key = "criterion", group = "Runtime", description = "Coverage criterion. Can define more than one criterion by using a ':' separated list")
     public static Criterion[] CRITERION = new Criterion[]{
             //these are basic criteria that should be always on by default
-            Criterion.LINE, Criterion.BRANCH, Criterion.EXCEPTION, Criterion.WEAKMUTATION, Criterion.OUTPUT, Criterion.METHOD, Criterion.METHODNOEXCEPTION, Criterion.CBRANCH};
+            Criterion.LINE, Criterion.BRANCH, Criterion.EXCEPTION, Criterion.WEAKMUTATION, Criterion.OUTPUT, Criterion.METHOD, Criterion.METHODNOEXCEPTION, Criterion.CBRANCH, Criterion.PRIVATEMETHOD};
 
 
     /**
@@ -2321,7 +2321,7 @@ public class Properties {
      * @return the initialised target class
      */
     public static Class<?> getInitializedTargetClass() {
-        return getTargetClass(true);
+        return getTargetClass();
     }
 
     /**
@@ -2333,7 +2333,7 @@ public class Properties {
      * @return the target class. The target class could be uninitialised
      */
     public static Class<?> getTargetClassAndDontInitialise() {
-        return getTargetClass(false);
+        return getTargetClass();
     }
 
 
@@ -2353,7 +2353,7 @@ public class Properties {
      *
      * @return a {@link java.lang.Class} object.
      */
-    private static Class<?> getTargetClass(boolean initialise) {
+    public static Class<?> getTargetClass() {
 
         if (TARGET_CLASS_INSTANCE != null
                 && TARGET_CLASS_INSTANCE.getCanonicalName()
@@ -2378,6 +2378,7 @@ public class Properties {
 
 
             LoopCounter.getInstance().setActive(false);
+            boolean initialise=false;
             TARGET_CLASS_INSTANCE = Class.forName(TARGET_CLASS, initialise,
                     TestGenerationContext.getInstance().getClassLoaderForSUT());
 

@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with EvoSuite. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.evosuite.coverage.method;
+package org.evosuite.coverage.privateMethod;
 
 import org.evosuite.Properties;
 import org.evosuite.ga.archive.Archive;
@@ -29,89 +29,114 @@ import org.evosuite.testcase.statements.EntityWithParametersStatement;
 import org.evosuite.testcase.statements.MethodStatement;
 import org.evosuite.testcase.statements.Statement;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+//
 
-/**
- * Fitness function for a single test on a single method (including calls that throw exceptions)
- *
- * @author Gordon Fraser, Jose Miguel Rojas
- */
-public class MethodCoverageTestFitness extends TestFitnessFunction {
 
-    private static final long serialVersionUID = 3624503060256855484L;
+import java.util.*;
 
-    /**
-     * Target method
-     */
+public class PrivateMethodCoverageTestFitness extends TestFitnessFunction {
+
+    private static final long serialVersionUID = 1624503060256855484L;
+
     protected final String className;
     protected final String methodName;
 
-    /**
-     * Constructor - fitness is specific to a method
-     *
-     * @param className  the class name
-     * @param methodName the method name
-     */
-    public MethodCoverageTestFitness(String className, String methodName) {
-        this.className = Objects.requireNonNull(className, "className cannot be null");
-        this.methodName = Objects.requireNonNull(methodName, "methodName cannot be null");
-    }
 
-    /**
-     * <p>
-     * getClassName
-     * </p>
-     *
-     * @return a {@link String} object.
-     */
-    public String getClassName() {
-        return className;
-    }
-
-    /**
-     * <p>
-     * getMethod
-     * </p>
-     *
-     * @return a {@link String} object.
-     */
     public String getMethod() {
         return methodName;
     }
 
-    /**
-     * {@inheritDoc}
-     * <p>
-     * Calculate fitness
-     *
-     * @param individual a {@link org.evosuite.testcase.ExecutableChromosome} object.
-     * @param result     a {@link org.evosuite.testcase.execution.ExecutionResult} object.
-     * @return a double.
-     */
+    public PrivateMethodCoverageTestFitness(String className, String methodName) {
+        this.className = Objects.requireNonNull(className, "className cannot be null");
+        this.methodName = Objects.requireNonNull(methodName, "methodName cannot be null");
+    }
+
+    public String getClassName() {
+        return className;
+    }
+
+    static float sumOfGP(float a, float r, int n)
+    {
+        float sum = 0;
+        for (int i = 0; i < n; i++)
+        {
+            sum = sum + a;
+            a = a * r;
+        }
+        return sum;
+    }
+
+/*
+    @Override
+    public double getFitness(TestChromosome individual, ExecutionResult result) {
+
+        double fitness = 1.0;
+        Class<?> c = Properties.getInitializedTargetClass();
+
+        List<Object> privateMethods = new ArrayList<Object>();
+        List<Object> publicMethods = new ArrayList<Object>();
+        for (Method method : c.getDeclaredMethods()) {
+            if (Modifier.isPublic(method.getModifiers())) {
+                publicMethods.add(method.getName());
+            } else {
+                String s = method.getName().toString();
+                if (s != "__STATIC_RESET") {
+                    privateMethods.add(method.getName());
+                }
+            }
+        }
+
+        Set<String> coveredMethods = result.getTrace().getCoveredMethods();
+
+        Map<String, Integer> coveredMethodsCount = result.getTrace().getMethodExecutionCount();
+        float scoreMax = (float) (1.0 / privateMethods.size());
+        double fitnessLocal = 0.0;
+        for (Object pMethod : privateMethods) {
+            for (String str : coveredMethods) {
+                String a = pMethod.toString();
+                if (str.contains(a)) {
+                    //make sure it the same number of methods is called
+                    int n = coveredMethodsCount.get(str);
+                    float t = sumOfGP(scoreMax / 2, 0.5F, n);
+                    fitnessLocal = fitnessLocal + t;
+
+                }
+            }
+        }
+        fitness = 1 - fitnessLocal;
+
+        //maybe call / track goals here ex: add 1 goal per private method / ex2: add a nr of calls per method
+        // see method coverage
+        updateIndividual(individual, fitness);
+        // UNDERSTAND GOALS / SET OF GOALS / AND HOW THEY ARE HANDLED
+        // TRY TO GET/IMPLEMENT DEFECTS4J (build ar file and replace evosuite in defcts for J)
+        //USE JAVA 8 TO MAKE SURE IT WORKS WITH DEFECTS4J
+
+
+        if (fitness <= scoreMax/2) {
+            individual.getTestCase().addCoveredGoal(this);
+        }
+        if (Properties.TEST_ARCHIVE) {
+            Archive.getArchiveInstance().updateArchive(this, individual, fitness);
+        }
+        return fitness;
+    }
+*/
+
+
     @Override
     public double getFitness(TestChromosome individual, ExecutionResult result) {
         double fitness = 1.0;
 
         List<Integer> exceptionPositions = asSortedList(result.getPositionsWhereExceptionsWereThrown());
-        for (Statement stmt : result.test) {
-            if (!isValidPosition(exceptionPositions, stmt.getPosition())) {
-                break;
-            }
+        for (String stmt : result.getTrace().getCoveredMethods()) {
 
-            if ((stmt instanceof MethodStatement || stmt instanceof ConstructorStatement)) {
-                EntityWithParametersStatement ps = (EntityWithParametersStatement) stmt;
-                String className = ps.getDeclaringClassName();
-                String methodDesc = ps.getDescriptor();
-                String methodName = ps.getMethodName() + methodDesc;
-
-                if (this.className.equals(className) && this.methodName.equals(methodName)) {
+                if (stmt.contains(className) && stmt.contains(methodName)) {
                     fitness = 0.0;
                     break;
                 }
-            }
         }
 
         updateIndividual(individual, fitness);
@@ -124,8 +149,15 @@ public class MethodCoverageTestFitness extends TestFitnessFunction {
             Archive.getArchiveInstance().updateArchive(this, individual, fitness);
         }
 
+
+
+
+
+
         return fitness;
     }
+
+
 
     private boolean isValidPosition(List<Integer> exceptionPositions, Integer position) {
         if (Properties.BREAK_ON_EXCEPTION) {
@@ -135,32 +167,26 @@ public class MethodCoverageTestFitness extends TestFitnessFunction {
         }
     }
 
+
+
     private <T extends Comparable<? super T>> List<T> asSortedList(Collection<T> c) {
         List<T> list = new ArrayList<>(c);
         java.util.Collections.sort(list);
         return list;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+
     @Override
     public String toString() {
         return "[METHOD] " + className + "." + methodName;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int hashCode() {
         int iConst = 13;
         return 51 * iConst + className.hashCode() * iConst + methodName.hashCode();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
@@ -169,19 +195,16 @@ public class MethodCoverageTestFitness extends TestFitnessFunction {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        MethodCoverageTestFitness other = (MethodCoverageTestFitness) obj;
+        PrivateMethodCoverageTestFitness other = (PrivateMethodCoverageTestFitness) obj;
         if (!className.equals(other.className)) {
             return false;
         } else return methodName.equals(other.methodName);
     }
 
-    /* (non-Javadoc)
-     * @see org.evosuite.testcase.TestFitnessFunction#compareTo(org.evosuite.testcase.TestFitnessFunction)
-     */
     @Override
     public int compareTo(TestFitnessFunction other) {
-        if (other instanceof MethodCoverageTestFitness) {
-            MethodCoverageTestFitness otherMethodFitness = (MethodCoverageTestFitness) other;
+        if (other instanceof PrivateMethodCoverageTestFitness) {
+            PrivateMethodCoverageTestFitness otherMethodFitness = (PrivateMethodCoverageTestFitness) other;
             if (className.equals(otherMethodFitness.getClassName()))
                 return methodName.compareTo(otherMethodFitness.getMethod());
             else
@@ -190,17 +213,12 @@ public class MethodCoverageTestFitness extends TestFitnessFunction {
         return compareClassName(other);
     }
 
-    /* (non-Javadoc)
-     * @see org.evosuite.testcase.TestFitnessFunction#getTargetClass()
-     */
+
     @Override
     public String getTargetClass() {
         return getClassName();
     }
 
-    /* (non-Javadoc)
-     * @see org.evosuite.testcase.TestFitnessFunction#getTargetMethod()
-     */
     @Override
     public String getTargetMethod() {
         return getMethod();

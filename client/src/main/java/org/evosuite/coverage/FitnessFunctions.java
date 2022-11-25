@@ -43,7 +43,9 @@ import org.evosuite.coverage.line.LineCoverageSuiteFitness;
 import org.evosuite.coverage.line.LineCoverageTestFitness;
 import org.evosuite.coverage.line.OnlyLineCoverageSuiteFitness;
 import org.evosuite.coverage.method.*;
+import org.evosuite.coverage.privateMethod.*;
 import org.evosuite.coverage.mutation.*;
+import org.evosuite.coverage.privateMethod.PrivateMethodCoverageTestFitness;
 import org.evosuite.coverage.readability.ReadabilitySuiteFitness;
 import org.evosuite.coverage.rho.RhoCoverageFactory;
 import org.evosuite.coverage.rho.RhoCoverageSuiteFitness;
@@ -110,6 +112,8 @@ public class FitnessFunctions {
                 return new MethodTraceCoverageSuiteFitness();
             case METHOD:
                 return new MethodCoverageSuiteFitness();
+            case PRIVATEMETHOD:
+                return new PrivateMethodCoverageSuiteFitness();
             case METHODNOEXCEPTION:
                 return new MethodNoExceptionCoverageSuiteFitness();
             case ONLYLINE:
@@ -170,6 +174,8 @@ public class FitnessFunctions {
                 return new MethodTraceCoverageFactory();
             case METHOD:
                 return new MethodCoverageFactory();
+            case PRIVATEMETHOD:
+                return new PrivateMethodCoverageFactory();
             case METHODNOEXCEPTION:
                 return new MethodNoExceptionCoverageFactory();
             case LINE:
@@ -232,6 +238,8 @@ public class FitnessFunctions {
                 return MethodTraceCoverageTestFitness.class;
             case METHOD:
                 return MethodCoverageTestFitness.class;
+            case PRIVATEMETHOD:
+                return PrivateMethodCoverageTestFitness.class;
             case METHODNOEXCEPTION:
                 return MethodNoExceptionCoverageTestFitness.class;
             case ONLYLINE:

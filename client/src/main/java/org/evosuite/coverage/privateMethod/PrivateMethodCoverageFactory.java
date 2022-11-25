@@ -17,11 +17,10 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with EvoSuite. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.evosuite.coverage.method;
+package org.evosuite.coverage.privateMethod;
 
 import org.evosuite.Properties;
 import org.evosuite.coverage.MethodNameMatcher;
-import org.evosuite.coverage.privateMethod.PrivateMethodCoverageTestFitness;
 import org.evosuite.graphs.cfg.BytecodeInstruction;
 import org.evosuite.setup.TestUsageChecker;
 import org.evosuite.testsuite.AbstractFitnessFactory;
@@ -36,17 +35,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-/**
- * <p>
- * MethodCoverageFactory class.
- * </p>
- *
- * @author Gordon Fraser, Andre Mis, Jose Miguel Rojas
- */
-public class MethodCoverageFactory extends
+
+public class PrivateMethodCoverageFactory extends
         AbstractFitnessFactory<PrivateMethodCoverageTestFitness> {
 
-    private static final Logger logger = LoggerFactory.getLogger(MethodCoverageFactory.class);
+    private static final Logger logger = LoggerFactory.getLogger(PrivateMethodCoverageFactory.class);
     private final MethodNameMatcher matcher = new MethodNameMatcher();
 
     /*
@@ -81,6 +74,8 @@ public class MethodCoverageFactory extends
 
     private List<PrivateMethodCoverageTestFitness> getCoverageGoals(Class<?> clazz, String className) {
         List<PrivateMethodCoverageTestFitness> goals = new ArrayList<>();
+
+        /* // constructor calls - not an interesting goal
         Constructor<?>[] allConstructors = clazz.getDeclaredConstructors();
         for (Constructor<?> c : allConstructors) {
             if (TestUsageChecker.canUse(c)) {
@@ -89,9 +84,11 @@ public class MethodCoverageFactory extends
                 goals.add(new PrivateMethodCoverageTestFitness(className, methodName));
             }
         }
+        */
+        /*
         Method[] allMethods = clazz.getDeclaredMethods();
         for (Method m : allMethods) {
-            if (TestUsageChecker.canUse(m)) {
+            if (!TestUsageChecker.canUse(m)) {
                 if (clazz.isEnum()) {
                     if (m.getName().equals("valueOf") || m.getName().equals("values")
                             || m.getName().equals("ordinal")) {
@@ -112,6 +109,25 @@ public class MethodCoverageFactory extends
                 goals.add(new PrivateMethodCoverageTestFitness(className, methodName));
             }
         }
+         */
+
+        // 1 GOAL PER PRIVATE METHOD
+        List<Object> privateMethods = new ArrayList<Object>();
+        List<Object> publicMethods = new ArrayList<Object>();
+        for (Method method : clazz.getDeclaredMethods()) {
+            if (Modifier.isPublic(method.getModifiers())){
+               // publicMethods.add(method.getName());
+            }else {
+                String s = method.getName();
+                if (s != "__STATIC_RESET"){
+                     logger.info("Adding goal for method " + className + "." + method.getName());
+                     goals.add(new PrivateMethodCoverageTestFitness(className, method.getName()));
+                }
+            }
+        }
+       // List<Object> a = privateMethods;
+
+
         return goals;
     }
 
@@ -136,7 +152,7 @@ public class MethodCoverageFactory extends
      * Convenience method calling createMethodTestFitness(class,method) with
      * the respective class and method of the given BytecodeInstruction.
      *
-     * @param instruction a {@link org.evosuite.graphs.cfg.BytecodeInstruction} object.
+     * @param instruction a {@link BytecodeInstruction} object.
      * @return a {@link org.evosuite.coverage.branch.BranchCoverageTestFitness}
      * object.
      */

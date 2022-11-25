@@ -17,10 +17,10 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with EvoSuite. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.evosuite.coverage.method;
+package org.evosuite.coverage.privateMethod;
 
 import org.evosuite.Properties;
-import org.evosuite.coverage.privateMethod.PrivateMethodCoverageTestFitness;
+import org.evosuite.coverage.privateMethod.PrivateMethodCoverageFactory;
 import org.evosuite.ga.archive.Archive;
 import org.evosuite.testcase.TestChromosome;
 import org.evosuite.testcase.TestFitnessFunction;
@@ -40,11 +40,11 @@ import java.util.*;
  *
  * @author Gordon Fraser, Jose Miguel Rojas
  */
-public class MethodCoverageSuiteFitness extends TestSuiteFitnessFunction {
+public class PrivateMethodCoverageSuiteFitness extends TestSuiteFitnessFunction {
 
-    private static final long serialVersionUID = 3359321076367091582L;
+    //private static final long serialVersionUID = 1359321076367091582L;
 
-    private final static Logger logger = LoggerFactory.getLogger(MethodCoverageSuiteFitness.class);
+    private final static Logger logger = LoggerFactory.getLogger(PrivateMethodCoverageSuiteFitness.class);
 
     // Each test gets a set of distinct covered goals, these are mapped by branch id
     protected final Map<String, TestFitnessFunction> methodCoverageMap = new LinkedHashMap<>();
@@ -62,7 +62,7 @@ public class MethodCoverageSuiteFitness extends TestSuiteFitnessFunction {
      * Constructor for MethodCoverageSuiteFitness.
      * </p>
      */
-    public MethodCoverageSuiteFitness() {
+    public PrivateMethodCoverageSuiteFitness() {
         determineCoverageGoals();
         totalMethods = methodCoverageMap.size();
         logger.info("Total methods: " + totalMethods);
@@ -72,7 +72,7 @@ public class MethodCoverageSuiteFitness extends TestSuiteFitnessFunction {
      * Initialize the set of known coverage goals
      */
     protected void determineCoverageGoals() {
-        List<PrivateMethodCoverageTestFitness> goals = new MethodCoverageFactory().getCoverageGoals();
+        List<PrivateMethodCoverageTestFitness> goals = new PrivateMethodCoverageFactory().getCoverageGoals();
         for (PrivateMethodCoverageTestFitness goal : goals) {
             methodCoverageMap.put(goal.getClassName() + "." + goal.getMethod(), goal);
             if (Properties.TEST_ARCHIVE)
@@ -138,18 +138,17 @@ public class MethodCoverageSuiteFitness extends TestSuiteFitnessFunction {
             test.setTestCase(result.test);
             test.setLastExecutionResult(result);
             test.setChanged(false);
-
-            for (String methodName : this.methodCoverageMap.keySet()) {
+           // double fit = goal.getFitness(test, result);
+           for (String methodName : this.methodCoverageMap.keySet()) {
                 TestFitnessFunction goal = this.methodCoverageMap.get(methodName);
 
                 double fit = goal.getFitness(test, result); // archive is updated by the TestFitnessFunction class
 
-                if (fit == 0.0) {
+                if (fit == 0) {// predefined threhold to convert score to goal(?)
                     calledMethods.add(methodName); // helper to count the number of covered goals
                     this.toRemoveMethods.add(methodName); // goal to not be considered by the next iteration of the evolutionary algorithm
                 }
             }
-
             // In case there were exceptions in a constructor
             handleConstructorExceptions(test, result, calledMethods);
         }
@@ -163,7 +162,7 @@ public class MethodCoverageSuiteFitness extends TestSuiteFitnessFunction {
      */
     @Override
     public double getFitness(TestSuiteChromosome suite) {
-        logger.trace("Calculating method fitness");
+        logger.trace("Calculating PRIVATE method fitness");
         double fitness = 0.0;
 
         List<ExecutionResult> results = runTestSuite(suite);

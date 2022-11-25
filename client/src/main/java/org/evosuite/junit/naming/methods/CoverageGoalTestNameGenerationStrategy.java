@@ -27,7 +27,7 @@ import org.evosuite.coverage.io.input.InputCoverageTestFitness;
 import org.evosuite.coverage.io.input.InputObserver;
 import org.evosuite.coverage.io.output.OutputCoverageTestFitness;
 import org.evosuite.coverage.io.output.OutputObserver;
-import org.evosuite.coverage.method.MethodCoverageTestFitness;
+import org.evosuite.coverage.privateMethod.PrivateMethodCoverageTestFitness;
 import org.evosuite.coverage.method.MethodNoExceptionCoverageTestFitness;
 import org.evosuite.runtime.mock.EvoSuiteMock;
 import org.evosuite.testcase.TestCase;
@@ -204,7 +204,7 @@ public class CoverageGoalTestNameGenerationStrategy implements TestNameGeneratio
         }
         Set<TestFitnessFunction> goals = new LinkedHashSet<>();
         for (TestFitnessFunction goal : filterSupportedGoals(test.getCoveredGoals())) {
-            if (goal instanceof MethodCoverageTestFitness)
+            if (goal instanceof PrivateMethodCoverageTestFitness)
                 continue;
             if (goal instanceof MethodNoExceptionCoverageTestFitness)
                 continue;
@@ -355,7 +355,7 @@ public class CoverageGoalTestNameGenerationStrategy implements TestNameGeneratio
     /**
      * We use only a subset of the possible criteria to determine names
      */
-    private final List<Class<?>> supportedClasses = Arrays.asList(new Class<?>[]{MethodCoverageTestFitness.class, MethodNoExceptionCoverageTestFitness.class,
+    private final List<Class<?>> supportedClasses = Arrays.asList(new Class<?>[]{PrivateMethodCoverageTestFitness.class, MethodNoExceptionCoverageTestFitness.class,
             ExceptionCoverageTestFitness.class, OutputCoverageTestFitness.class, InputCoverageTestFitness.class});
 
     /**
@@ -587,8 +587,8 @@ public class CoverageGoalTestNameGenerationStrategy implements TestNameGeneratio
      * @return
      */
     private String getGoalName(TestFitnessFunction goal) {
-        if (goal instanceof MethodCoverageTestFitness) {
-            return getGoalName((MethodCoverageTestFitness) goal);
+        if (goal instanceof PrivateMethodCoverageTestFitness) {
+            return getGoalName((PrivateMethodCoverageTestFitness) goal);
         } else if (goal instanceof MethodNoExceptionCoverageTestFitness) {
             return getGoalName((MethodNoExceptionCoverageTestFitness) goal);
         } else if (goal instanceof ExceptionCoverageTestFitness) {
@@ -609,7 +609,7 @@ public class CoverageGoalTestNameGenerationStrategy implements TestNameGeneratio
      * @param goal
      * @return
      */
-    private String getGoalName(MethodCoverageTestFitness goal) {
+    private String getGoalName(PrivateMethodCoverageTestFitness goal) {
         return formatMethodName(goal.getClassName(), goal.getMethod());
     }
 
@@ -697,8 +697,8 @@ public class CoverageGoalTestNameGenerationStrategy implements TestNameGeneratio
      */
     private String getGoalPairName(TestFitnessFunction goal1, TestFitnessFunction goal2) {
         if (goal1.getClass().equals(goal2.getClass())) {
-            if (goal1 instanceof MethodCoverageTestFitness) {
-                return getGoalPairName((MethodCoverageTestFitness) goal1, (MethodCoverageTestFitness) goal2);
+            if (goal1 instanceof PrivateMethodCoverageTestFitness) {
+                return getGoalPairName((PrivateMethodCoverageTestFitness) goal1, (PrivateMethodCoverageTestFitness) goal2);
             }
             if (goal1.getTargetClass().equals(goal2.getTargetClass()) && goal1.getTargetMethod().equals(goal2.getTargetMethod())) {
                 if (goal1 instanceof InputCoverageTestFitness) {
@@ -718,7 +718,7 @@ public class CoverageGoalTestNameGenerationStrategy implements TestNameGeneratio
      * @param goal2
      * @return
      */
-    private String getGoalPairName(MethodCoverageTestFitness goal1, MethodCoverageTestFitness goal2) {
+    private String getGoalPairName(PrivateMethodCoverageTestFitness goal1, PrivateMethodCoverageTestFitness goal2) {
         boolean isConstructor1 = goal1.getTargetMethod().startsWith("<init>");
         boolean isConstructor2 = goal2.getTargetMethod().startsWith("<init>");
 

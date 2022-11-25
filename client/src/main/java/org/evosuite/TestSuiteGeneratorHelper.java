@@ -81,6 +81,9 @@ public class TestSuiteGeneratorHelper {
             case METHODTRACE:
                 LoggingUtils.getEvoLogger().info("  - Method Coverage");
                 break;
+            case PRIVATEMETHOD:
+                LoggingUtils.getEvoLogger().info("  - Private Method Coverage");
+                break;
             case METHOD:
                 LoggingUtils.getEvoLogger().info("  - Top-Level Method Coverage");
                 break;

@@ -276,4 +276,5 @@ public abstract class EntityWithParametersStatement extends AbstractStatement {
 
     public abstract String getDescriptor();
 
+
 }

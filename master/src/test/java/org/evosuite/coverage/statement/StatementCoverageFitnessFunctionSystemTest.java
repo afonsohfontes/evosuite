@@ -19,6 +19,8 @@
  */
 package org.evosuite.coverage.statement;
 
+import com.examples.with.different.packagename.reflection.PrivateMixAfonsoTest;
+
 import org.evosuite.EvoSuite;
 import org.evosuite.Properties;
 import org.evosuite.Properties.Criterion;
@@ -35,11 +37,13 @@ public class StatementCoverageFitnessFunctionSystemTest extends SystemTestBase {
     private void test() {
         Properties.CRITERION = new Properties.Criterion[]{Criterion.STATEMENT};
 
-        String targetClass = IntExample.class.getCanonicalName();
+        //String targetClass = IntExample.class.getCanonicalName();
+
+        String targetClass = PrivateMixAfonsoTest.class.getCanonicalName();
         Properties.TARGET_CLASS = targetClass;
 
         EvoSuite evosuite = new EvoSuite();
-        String[] command = new String[]{"-class", targetClass, "-generateSuite"};
+        String[] command = new String[]{"-class", targetClass, "-generateSuite", "-Dalgorithm=MONOTONIC_GA"};
         Object result = evosuite.parseCommandLine(command);
         GeneticAlgorithm<TestSuiteChromosome> ga = getGAFromResult(result);
         TestSuiteChromosome best = ga.getBestIndividual();

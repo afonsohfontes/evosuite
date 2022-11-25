@@ -357,6 +357,7 @@ public class ExecutionResult implements Cloneable {
 
             if (!test.getStatement(i).getDeclaredExceptions().contains(t.getClass()))
                 return true;
+                return true;
         }
 
         return false;
@@ -368,6 +369,7 @@ public class ExecutionResult implements Cloneable {
      * @return
      */
     public boolean calledReflection() {
+        //System.out.println(IntStream.mapToObj(numStatement );
         return IntStream.range(0, getExecutedStatements())
                 .mapToObj(numStatement -> test.getStatement(numStatement))
                 .anyMatch(Statement::isReflectionStatement);

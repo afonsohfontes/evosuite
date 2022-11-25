@@ -626,11 +626,13 @@ public enum RuntimeVariable {
      */
     QueryCacheSize,
     QueryCacheCalls,
-    QueryCacheHitRate;
+    QueryCacheHitRate,
+    PrivateMethodCoverage;
 
     /* -------------------------------------------------- */
 
     private static final Logger logger = LoggerFactory.getLogger(RuntimeVariable.class);
+    //public static RuntimeVariable PrivateMethodCoverage;
 
     /**
      * check if the variables do satisfy a set of predefined constraints: eg, the

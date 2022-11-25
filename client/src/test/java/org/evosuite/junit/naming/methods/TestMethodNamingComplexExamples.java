@@ -24,7 +24,7 @@ import org.evosuite.coverage.io.input.InputCoverageGoal;
 import org.evosuite.coverage.io.input.InputCoverageTestFitness;
 import org.evosuite.coverage.io.output.OutputCoverageGoal;
 import org.evosuite.coverage.io.output.OutputCoverageTestFitness;
-import org.evosuite.coverage.method.MethodCoverageTestFitness;
+import org.evosuite.coverage.privateMethod.PrivateMethodCoverageTestFitness;
 import org.evosuite.ga.ConstructionFailedException;
 import org.evosuite.testcase.DefaultTestCase;
 import org.evosuite.testcase.TestCase;
@@ -47,8 +47,8 @@ public class TestMethodNamingComplexExamples {
 
     @Test
     public void testTwoTestsOutputGoals() throws NoSuchMethodException, ConstructionFailedException, ClassNotFoundException {
-        TestFitnessFunction goal1 = new MethodCoverageTestFitness("FooClass", "keys()[I");
-        TestFitnessFunction goal2 = new MethodCoverageTestFitness("FooClass", "<init>(LFooClass;)V");
+        TestFitnessFunction goal1 = new PrivateMethodCoverageTestFitness("FooClass", "keys()[I");
+        TestFitnessFunction goal2 = new PrivateMethodCoverageTestFitness("FooClass", "<init>(LFooClass;)V");
 
         TestFitnessFunction goal3 = new OutputCoverageTestFitness(new OutputCoverageGoal("FooClass", "keys()", Type.INT_TYPE, NUM_NEGATIVE));
         TestFitnessFunction goal4 = new OutputCoverageTestFitness(new OutputCoverageGoal("FooClass", "keys()", Type.INT_TYPE, NUM_POSITIVE));
@@ -79,8 +79,8 @@ public class TestMethodNamingComplexExamples {
     public void testThreeTestsOutputGoals() throws NoSuchMethodException, ConstructionFailedException, ClassNotFoundException {
 
         // Method goals
-        TestFitnessFunction goal1 = new MethodCoverageTestFitness("FooClass", "mist(I)V");
-        TestFitnessFunction goal2 = new MethodCoverageTestFitness("FooClass", "keys()");
+        TestFitnessFunction goal1 = new PrivateMethodCoverageTestFitness("FooClass", "mist(I)V");
+        TestFitnessFunction goal2 = new PrivateMethodCoverageTestFitness("FooClass", "keys()");
 
         // Output goals for method keys()I
         TestFitnessFunction goal3 = new OutputCoverageTestFitness(new OutputCoverageGoal("FooClass", "keys()", Type.INT_TYPE, NUM_POSITIVE));
@@ -119,9 +119,9 @@ public class TestMethodNamingComplexExamples {
     public void testOverloadedMethods() throws NoSuchMethodException, ConstructionFailedException, ClassNotFoundException {
 
         // Method goals
-        TestFitnessFunction goal1 = new MethodCoverageTestFitness("FooClass", "<init>(LFooClass;)V");
-        TestFitnessFunction goal2 = new MethodCoverageTestFitness("FooClass", "values([B)[B");
-        TestFitnessFunction goal3 = new MethodCoverageTestFitness("FooClass", "values([I)[B");
+        TestFitnessFunction goal1 = new PrivateMethodCoverageTestFitness("FooClass", "<init>(LFooClass;)V");
+        TestFitnessFunction goal2 = new PrivateMethodCoverageTestFitness("FooClass", "values([B)[B");
+        TestFitnessFunction goal3 = new PrivateMethodCoverageTestFitness("FooClass", "values([I)[B");
 
         // Output goals for method values
         TestFitnessFunction goal4 = new OutputCoverageTestFitness(new OutputCoverageGoal("FooClass", "values([B)", Type.getType("[B"), ARRAY_EMPTY));
@@ -153,9 +153,9 @@ public class TestMethodNamingComplexExamples {
     public void testOverloadedMethodsNoArgs() throws NoSuchMethodException, ConstructionFailedException, ClassNotFoundException {
 
         // Method goals
-        TestFitnessFunction goal1 = new MethodCoverageTestFitness("FooClass", "<init>(LFooClass;)V");
-        TestFitnessFunction goal2 = new MethodCoverageTestFitness("FooClass", "values([B)[B");
-        TestFitnessFunction goal3 = new MethodCoverageTestFitness("FooClass", "values()[B");
+        TestFitnessFunction goal1 = new PrivateMethodCoverageTestFitness("FooClass", "<init>(LFooClass;)V");
+        TestFitnessFunction goal2 = new PrivateMethodCoverageTestFitness("FooClass", "values([B)[B");
+        TestFitnessFunction goal3 = new PrivateMethodCoverageTestFitness("FooClass", "values()[B");
 
         // Output goals for method values
         TestFitnessFunction goal4 = new OutputCoverageTestFitness(new OutputCoverageGoal("FooClass", "values([B)", Type.getType("[B"), ARRAY_EMPTY));
@@ -188,7 +188,7 @@ public class TestMethodNamingComplexExamples {
     public void testConstructors() throws NoSuchMethodException, ConstructionFailedException, ClassNotFoundException {
 
         // method goal
-        TestFitnessFunction goal1 = new MethodCoverageTestFitness("FooClass", "<init>(LFooClass;)V");
+        TestFitnessFunction goal1 = new PrivateMethodCoverageTestFitness("FooClass", "<init>(LFooClass;)V");
 
         // exception goal
         TestFitnessFunction goal2 = new ExceptionCoverageTestFitness("FooClass", "<init>(LFooClass;)V", ArrayIndexOutOfBoundsException.class, ExceptionCoverageTestFitness.ExceptionType.IMPLICIT);
@@ -217,8 +217,8 @@ public class TestMethodNamingComplexExamples {
     public void testExactSameTests() throws NoSuchMethodException, ConstructionFailedException, ClassNotFoundException {
 
         // method goals
-        TestFitnessFunction goal1 = new MethodCoverageTestFitness("FooClass", "values([B)[B");
-        TestFitnessFunction goal2 = new MethodCoverageTestFitness("FooClass", "values()[B");
+        TestFitnessFunction goal1 = new PrivateMethodCoverageTestFitness("FooClass", "values([B)[B");
+        TestFitnessFunction goal2 = new PrivateMethodCoverageTestFitness("FooClass", "values()[B");
 
         // output goals
         TestFitnessFunction goal4 = new OutputCoverageTestFitness(new OutputCoverageGoal("FooClass", "values([B)", Type.getType("[B"), ARRAY_EMPTY));
@@ -252,9 +252,9 @@ public class TestMethodNamingComplexExamples {
     public void testConstructorAndOverloadedMethods() throws NoSuchMethodException, ConstructionFailedException, ClassNotFoundException {
 
         // method goal
-        TestFitnessFunction goal1 = new MethodCoverageTestFitness("FooClass", "<init>(LFooClass;)V");
-        TestFitnessFunction goal2 = new MethodCoverageTestFitness("FooClass", "values()[B");
-        TestFitnessFunction goal3 = new MethodCoverageTestFitness("FooClass", "values([B)[B");
+        TestFitnessFunction goal1 = new PrivateMethodCoverageTestFitness("FooClass", "<init>(LFooClass;)V");
+        TestFitnessFunction goal2 = new PrivateMethodCoverageTestFitness("FooClass", "values()[B");
+        TestFitnessFunction goal3 = new PrivateMethodCoverageTestFitness("FooClass", "values([B)[B");
 
         // exception goal
         TestFitnessFunction goal4 = new ExceptionCoverageTestFitness("FooClass", "<init>(LFooClass;)V", ArrayIndexOutOfBoundsException.class, ExceptionCoverageTestFitness.ExceptionType.IMPLICIT);
@@ -294,9 +294,9 @@ public class TestMethodNamingComplexExamples {
     public void testIDNamingWithSameMethodGoals() throws NoSuchMethodException, ConstructionFailedException, ClassNotFoundException {
 
         // method goals
-        TestFitnessFunction goal1 = new MethodCoverageTestFitness("FooClass", "<init>()V");
-        TestFitnessFunction goal2 = new MethodCoverageTestFitness("FooClass", "getPublicID()Ljava/lang/String;");
-        TestFitnessFunction goal3 = new MethodCoverageTestFitness("FooClass", "setPublicID(Ljava/lang/String;)LFooClass;");
+        TestFitnessFunction goal1 = new PrivateMethodCoverageTestFitness("FooClass", "<init>()V");
+        TestFitnessFunction goal2 = new PrivateMethodCoverageTestFitness("FooClass", "getPublicID()Ljava/lang/String;");
+        TestFitnessFunction goal3 = new PrivateMethodCoverageTestFitness("FooClass", "setPublicID(Ljava/lang/String;)LFooClass;");
 
         // output goals
         TestFitnessFunction goal4 = new OutputCoverageTestFitness(new OutputCoverageGoal("FooClass", "getPublicID()", Type.getType("Ljava.lang.String;"), REF_NONNULL));
@@ -330,8 +330,8 @@ public class TestMethodNamingComplexExamples {
     public void testIDNamingWithSameMethodGoals2() throws NoSuchMethodException, ConstructionFailedException, ClassNotFoundException {
 
         // method goals
-        TestFitnessFunction goal1 = new MethodCoverageTestFitness("FooClass", "<init>(LField;II)V");
-        TestFitnessFunction goal2 = new MethodCoverageTestFitness("FooClass", "<init>(LFieldMatrix;)V");
+        TestFitnessFunction goal1 = new PrivateMethodCoverageTestFitness("FooClass", "<init>(LField;II)V");
+        TestFitnessFunction goal2 = new PrivateMethodCoverageTestFitness("FooClass", "<init>(LFieldMatrix;)V");
 
         // exception goals
         TestFitnessFunction goal3 = new ExceptionCoverageTestFitness("FooClass", "<init>(LField;II)V", ArrayIndexOutOfBoundsException.class, ExceptionCoverageTestFitness.ExceptionType.IMPLICIT);
