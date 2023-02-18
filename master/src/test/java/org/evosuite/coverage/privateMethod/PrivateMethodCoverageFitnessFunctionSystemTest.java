@@ -7,11 +7,14 @@ import org.evosuite.Properties.Criterion;
 import org.evosuite.SystemTestBase;
 import org.evosuite.ga.metaheuristics.GeneticAlgorithm;
 import org.evosuite.strategy.TestGenerationStrategy;
+import org.evosuite.testcase.TestFitnessFunction;
 import org.evosuite.testsuite.TestSuiteChromosome;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.List;
 
 public class PrivateMethodCoverageFitnessFunctionSystemTest extends SystemTestBase {
 
@@ -30,7 +33,7 @@ public class PrivateMethodCoverageFitnessFunctionSystemTest extends SystemTestBa
     @Before
     public void beforeTest() {
         Properties.CRITERION[0] = Criterion.PRIVATEMETHOD;
-        //Properties.MINIMIZE = false; // THIS MAXIMIZES IF SET TO FALSE?????????
+        Properties.MINIMIZE = true; // THIS MAXIMIZES IF SET TO FALSE?????????
         //int a = 0;
     }
 
@@ -54,22 +57,24 @@ public class PrivateMethodCoverageFitnessFunctionSystemTest extends SystemTestBa
         EvoSuite evosuite = new EvoSuite();
         String targetClass = PrivateMixAfonsoTest.class.getCanonicalName();
         Properties.TARGET_CLASS = targetClass;
-      //  Properties.CRITERION[0] = Criterion.PRIVATEMETHOD;
-        String[] command = new String[]{"-generateSuite", "-class", targetClass};//, "-Dalgorithm=MONOTONIC_GA"};
+        Properties.CRITERION[0] = Criterion.PRIVATEMETHOD;
+        Properties.TEST_ARCHIVE = true;
+
+        Properties.MINIMIZE = true;
+
+
+        String[] command = new String[]{"-generateSuite", "-class", targetClass, "-Dalgorithm=MONOTONIC_GA"};// "-Dalgorithm=DYNAMOSA"};
         Object result = evosuite.parseCommandLine(command);
-      //  GeneticAlgorithm<TestSuiteChromosome> ga = getGAFromResult(result);
-       // TestSuiteChromosome best = ga.getBestIndividual();
-
-
+        GeneticAlgorithm<TestSuiteChromosome> ga = getGAFromResult(result);
+       List<TestSuiteChromosome> bestSet = ga.getBestIndividuals();
+        TestSuiteChromosome best = ga.getBestIndividual();
 
         int goals = TestGenerationStrategy.getFitnessFactories().get(0).getCoverageGoals().size();
-        // I KNOW there are only two private methods in the given class
-        Assert.assertEquals(2, goals);
+
+        Assert.assertEquals(4, goals);
         System.out.println("All objectives achieved!");
-       // System.out.println("EvolvedTestSuite:\n" + best);
-       // Assert.assertEquals("Non-optimal coverage: ", 1d, best.getCoverage(), 0.001);
+       System.out.println("EvolvedTestSuite:\n" + best);
+      // double i = best.getCoverage();
+      // Assert.assertEquals("Non-optimal coverage: ", 1d, best.getCoverage(), 0.001);
     }
-
-
-
 }

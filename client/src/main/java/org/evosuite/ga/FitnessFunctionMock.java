@@ -80,5 +80,6 @@ public class FitnessFunctionMock<T extends Chromosome<T>, U extends Chromosome<U
     public boolean isMaximizationFunction() {
         throw new UnsupportedOperationException("isMaximizationFunction() called on mock");
 
+        //return false;
     }
 }

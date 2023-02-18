@@ -40,7 +40,7 @@ public class NullIntegerSystemTest extends SystemTestBase {
 
         Properties.TARGET_CLASS = targetClass;
 
-        String[] command = new String[]{"-generateSuite", "-class", targetClass, "-Dalgorithm=MONOTONIC_GA"};
+        String[] command = new String[]{"-generateSuite", "-class", targetClass};
 
         Object result = evosuite.parseCommandLine(command);
         GeneticAlgorithm<TestSuiteChromosome> ga = getGAFromResult(result);

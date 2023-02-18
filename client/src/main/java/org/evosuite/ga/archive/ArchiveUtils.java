@@ -32,13 +32,13 @@ import org.evosuite.coverage.io.input.InputCoverageTestFitness;
 import org.evosuite.coverage.io.output.OutputCoverageTestFitness;
 import org.evosuite.coverage.line.LineCoverageTestFitness;
 import org.evosuite.coverage.method.MethodCoverageTestFitness;
-import org.evosuite.coverage.privateMethod.PrivateMethodCoverageTestFitness;
 import org.evosuite.coverage.method.MethodNoExceptionCoverageTestFitness;
 import org.evosuite.coverage.method.MethodTraceCoverageTestFitness;
 import org.evosuite.coverage.mutation.MutationTestFitness;
 import org.evosuite.coverage.mutation.OnlyMutationTestFitness;
 import org.evosuite.coverage.mutation.StrongMutationTestFitness;
 import org.evosuite.coverage.mutation.WeakMutationTestFitness;
+import org.evosuite.coverage.privateMethod.PrivateMethodCoverageTestFitness;
 import org.evosuite.coverage.rho.RhoCoverageTestFitness;
 import org.evosuite.coverage.statement.StatementCoverageTestFitness;
 import org.evosuite.ga.FitnessFunction;
@@ -55,7 +55,7 @@ public final class ArchiveUtils {
     /**
      * Checks whether a specific goal (i.e., a {@link org.evosuite.testcase.TestFitnessFunction}
      * object) is of an enabled criterion. A criterion is considered enabled if and only if defined in
-     * {@link //org.evosuite.Properties.CRITERION}.
+     * {@link //org . evosuite. Properties. CRITERION}.
      *
      * @param goal a {@link org.evosuite.testcase.TestFitnessFunction} object
      * @return true if criterion of goal is enabled, false otherwise
@@ -140,13 +140,12 @@ public final class ArchiveUtils {
                         return true;
                     }
                     break;
-                case PRIVATEMETHOD:
-                    if (goal instanceof PrivateMethodCoverageTestFitness) {
-                        return true;
-                    }
-                    break;
                 case METHOD:
                     if (goal instanceof MethodCoverageTestFitness) {
+                        return true;
+                    }
+                case PRIVATEMETHOD:
+                    if (goal instanceof PrivateMethodCoverageTestFitness) {
                         return true;
                     }
                     break;

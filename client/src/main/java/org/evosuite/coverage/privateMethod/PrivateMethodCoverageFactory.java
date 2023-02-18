@@ -22,13 +22,10 @@ package org.evosuite.coverage.privateMethod;
 import org.evosuite.Properties;
 import org.evosuite.coverage.MethodNameMatcher;
 import org.evosuite.graphs.cfg.BytecodeInstruction;
-import org.evosuite.setup.TestUsageChecker;
 import org.evosuite.testsuite.AbstractFitnessFactory;
-import org.objectweb.asm.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -60,8 +57,11 @@ public class PrivateMethodCoverageFactory extends
 
         String className = Properties.TARGET_CLASS;
         Class<?> clazz = Properties.getTargetClassAndDontInitialise();
+
         if (clazz != null) {
             goals.addAll(getCoverageGoals(clazz, className));
+           // goals.addAll(getCoverageGoals(clazz, className));
+           // goals.addAll(getCoverageGoals(clazz, className));
             Class<?>[] innerClasses = clazz.getDeclaredClasses();
             for (Class<?> innerClass : innerClasses) {
                 String innerClassName = innerClass.getCanonicalName();
@@ -112,8 +112,8 @@ public class PrivateMethodCoverageFactory extends
          */
 
         // 1 GOAL PER PRIVATE METHOD
-        List<Object> privateMethods = new ArrayList<Object>();
-        List<Object> publicMethods = new ArrayList<Object>();
+        //List<Object> privateMethods = new ArrayList<Object>();
+        //List<Object> publicMethods = new ArrayList<Object>();
         for (Method method : clazz.getDeclaredMethods()) {
             if (Modifier.isPublic(method.getModifiers())){
                // publicMethods.add(method.getName());
@@ -122,11 +122,10 @@ public class PrivateMethodCoverageFactory extends
                 if (s != "__STATIC_RESET"){
                      logger.info("Adding goal for method " + className + "." + method.getName());
                      goals.add(new PrivateMethodCoverageTestFitness(className, method.getName()));
+                     List<PrivateMethodCoverageTestFitness> g = goals;
                 }
             }
         }
-       // List<Object> a = privateMethods;
-
 
         return goals;
     }

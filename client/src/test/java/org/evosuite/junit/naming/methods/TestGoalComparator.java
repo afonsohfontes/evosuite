@@ -23,7 +23,7 @@ import org.evosuite.coverage.exception.ExceptionCoverageTestFitness;
 import org.evosuite.coverage.io.IOCoverageConstants;
 import org.evosuite.coverage.io.output.OutputCoverageGoal;
 import org.evosuite.coverage.io.output.OutputCoverageTestFitness;
-import org.evosuite.coverage.privateMethod.PrivateMethodCoverageTestFitness;
+import org.evosuite.coverage.method.MethodCoverageTestFitness;
 import org.evosuite.runtime.mock.java.lang.MockArithmeticException;
 import org.evosuite.testcase.TestFitnessFunction;
 import org.junit.Test;
@@ -51,7 +51,7 @@ public class TestGoalComparator {
     @Test
     public void testCompareExceptionMethod() {
         GoalComparator comparator = new GoalComparator();
-        PrivateMethodCoverageTestFitness goal1 = new PrivateMethodCoverageTestFitness("FooClass", "toString()");
+        MethodCoverageTestFitness goal1 = new MethodCoverageTestFitness("FooClass", "toString()");
         ExceptionCoverageTestFitness goal2 = new ExceptionCoverageTestFitness("FooClass", "toString()", MockArithmeticException.class, ExceptionCoverageTestFitness.ExceptionType.EXPLICIT);
 
         assertEquals(1, comparator.compare(goal1, goal2));
@@ -60,7 +60,7 @@ public class TestGoalComparator {
     @Test
     public void testComparatorList() {
         GoalComparator comparator = new GoalComparator();
-        PrivateMethodCoverageTestFitness goal1 = new PrivateMethodCoverageTestFitness("FooClass", "toString()");
+        MethodCoverageTestFitness goal1 = new MethodCoverageTestFitness("FooClass", "toString()");
         ExceptionCoverageTestFitness goal2 = new ExceptionCoverageTestFitness("FooClass", "toString()", MockArithmeticException.class, ExceptionCoverageTestFitness.ExceptionType.EXPLICIT);
         OutputCoverageGoal outputGoal = new OutputCoverageGoal("FooClass", "toString", Type.getType("Ljava.lang.String;"), IOCoverageConstants.REF_NONNULL);
         OutputCoverageTestFitness goal3 = new OutputCoverageTestFitness(outputGoal);

@@ -235,9 +235,12 @@ public enum RuntimeVariable {
      * The obtained method coverage
      */
     MethodCoverage,
+    PrivateMethodCoverage,
     MethodFitnessTimeline,
+    PrivateMethodFitnessTimeline,
     MethodCoverageTimeline,
     MethodCoverageBitString,
+    PrivateMethodCoverageBitString,
     /**
      * The obtained method coverage (only normal behaviour)
      */
@@ -626,13 +629,11 @@ public enum RuntimeVariable {
      */
     QueryCacheSize,
     QueryCacheCalls,
-    QueryCacheHitRate,
-    PrivateMethodCoverage;
+    QueryCacheHitRate;
 
     /* -------------------------------------------------- */
 
     private static final Logger logger = LoggerFactory.getLogger(RuntimeVariable.class);
-    //public static RuntimeVariable PrivateMethodCoverage;
 
     /**
      * check if the variables do satisfy a set of predefined constraints: eg, the

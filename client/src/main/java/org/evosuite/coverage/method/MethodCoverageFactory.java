@@ -21,7 +21,6 @@ package org.evosuite.coverage.method;
 
 import org.evosuite.Properties;
 import org.evosuite.coverage.MethodNameMatcher;
-import org.evosuite.coverage.privateMethod.PrivateMethodCoverageTestFitness;
 import org.evosuite.graphs.cfg.BytecodeInstruction;
 import org.evosuite.setup.TestUsageChecker;
 import org.evosuite.testsuite.AbstractFitnessFactory;
@@ -44,7 +43,7 @@ import java.util.List;
  * @author Gordon Fraser, Andre Mis, Jose Miguel Rojas
  */
 public class MethodCoverageFactory extends
-        AbstractFitnessFactory<PrivateMethodCoverageTestFitness> {
+        AbstractFitnessFactory<MethodCoverageTestFitness> {
 
     private static final Logger logger = LoggerFactory.getLogger(MethodCoverageFactory.class);
     private final MethodNameMatcher matcher = new MethodNameMatcher();
@@ -60,9 +59,9 @@ public class MethodCoverageFactory extends
      * {@inheritDoc}
      */
     @Override
-    public List<PrivateMethodCoverageTestFitness> getCoverageGoals() {
-        List<PrivateMethodCoverageTestFitness> goals = new ArrayList<>();
-
+    public List<MethodCoverageTestFitness> getCoverageGoals() {
+        List<MethodCoverageTestFitness> goals = new ArrayList<>();
+        Properties.MINIMIZE = false;
         long start = System.currentTimeMillis();
 
         String className = Properties.TARGET_CLASS;
@@ -79,14 +78,14 @@ public class MethodCoverageFactory extends
         return goals;
     }
 
-    private List<PrivateMethodCoverageTestFitness> getCoverageGoals(Class<?> clazz, String className) {
-        List<PrivateMethodCoverageTestFitness> goals = new ArrayList<>();
+    private List<MethodCoverageTestFitness> getCoverageGoals(Class<?> clazz, String className) {
+        List<MethodCoverageTestFitness> goals = new ArrayList<>();
         Constructor<?>[] allConstructors = clazz.getDeclaredConstructors();
         for (Constructor<?> c : allConstructors) {
             if (TestUsageChecker.canUse(c)) {
                 String methodName = "<init>" + Type.getConstructorDescriptor(c);
                 logger.info("Adding goal for constructor " + className + "." + methodName);
-                goals.add(new PrivateMethodCoverageTestFitness(className, methodName));
+                goals.add(new MethodCoverageTestFitness(className, methodName));
             }
         }
         Method[] allMethods = clazz.getDeclaredMethods();
@@ -109,7 +108,7 @@ public class MethodCoverageFactory extends
                     continue;
                 }
                 logger.info("Adding goal for method " + className + "." + methodName);
-                goals.add(new PrivateMethodCoverageTestFitness(className, methodName));
+                goals.add(new MethodCoverageTestFitness(className, methodName));
             }
         }
         return goals;
@@ -125,10 +124,10 @@ public class MethodCoverageFactory extends
      * @return a {@link org.evosuite.coverage.branch.BranchCoverageTestFitness}
      * object.
      */
-    public static PrivateMethodCoverageTestFitness createMethodTestFitness(
+    public static MethodCoverageTestFitness createMethodTestFitness(
             String className, String method) {
 
-        return new PrivateMethodCoverageTestFitness(className,
+        return new MethodCoverageTestFitness(className,
                 method.substring(method.lastIndexOf(".") + 1));
     }
 
@@ -140,7 +139,7 @@ public class MethodCoverageFactory extends
      * @return a {@link org.evosuite.coverage.branch.BranchCoverageTestFitness}
      * object.
      */
-    public static PrivateMethodCoverageTestFitness createMethodTestFitness(
+    public static MethodCoverageTestFitness createMethodTestFitness(
             BytecodeInstruction instruction) {
         if (instruction == null)
             throw new IllegalArgumentException("null given");

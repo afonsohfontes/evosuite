@@ -193,6 +193,7 @@ public class MonotonicGA<T extends Chromosome<T>> extends GeneticAlgorithm<T> {
         currentIteration = 0;
 
         // Set up initial population
+        int a = Properties.POPULATION;
         generateInitialPopulation(Properties.POPULATION);
         logger.debug("Calculating fitness of initial population");
         calculateFitnessAndSortPopulation();

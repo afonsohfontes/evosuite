@@ -20,7 +20,6 @@
 package org.evosuite.coverage.method;
 
 import org.evosuite.Properties;
-import org.evosuite.coverage.privateMethod.PrivateMethodCoverageTestFitness;
 import org.evosuite.ga.archive.Archive;
 import org.evosuite.testcase.TestChromosome;
 import org.evosuite.testcase.TestFitnessFunction;
@@ -72,8 +71,8 @@ public class MethodCoverageSuiteFitness extends TestSuiteFitnessFunction {
      * Initialize the set of known coverage goals
      */
     protected void determineCoverageGoals() {
-        List<PrivateMethodCoverageTestFitness> goals = new MethodCoverageFactory().getCoverageGoals();
-        for (PrivateMethodCoverageTestFitness goal : goals) {
+        List<MethodCoverageTestFitness> goals = new MethodCoverageFactory().getCoverageGoals();
+        for (MethodCoverageTestFitness goal : goals) {
             methodCoverageMap.put(goal.getClassName() + "." + goal.getMethod(), goal);
             if (Properties.TEST_ARCHIVE)
                 Archive.getArchiveInstance().addTarget(goal);

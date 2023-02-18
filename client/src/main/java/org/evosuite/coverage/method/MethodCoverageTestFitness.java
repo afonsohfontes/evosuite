@@ -24,15 +24,13 @@ import org.evosuite.ga.archive.Archive;
 import org.evosuite.testcase.TestChromosome;
 import org.evosuite.testcase.TestFitnessFunction;
 import org.evosuite.testcase.execution.ExecutionResult;
+import org.evosuite.testcase.execution.MethodCall;
 import org.evosuite.testcase.statements.ConstructorStatement;
 import org.evosuite.testcase.statements.EntityWithParametersStatement;
 import org.evosuite.testcase.statements.MethodStatement;
 import org.evosuite.testcase.statements.Statement;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * Fitness function for a single test on a single method (including calls that throw exceptions)
@@ -94,8 +92,8 @@ public class MethodCoverageTestFitness extends TestFitnessFunction {
     @Override
     public double getFitness(TestChromosome individual, ExecutionResult result) {
         double fitness = 1.0;
-
         List<Integer> exceptionPositions = asSortedList(result.getPositionsWhereExceptionsWereThrown());
+
         for (Statement stmt : result.test) {
             if (!isValidPosition(exceptionPositions, stmt.getPosition())) {
                 break;

@@ -154,6 +154,7 @@ public class DefaultTestCase implements TestCase, Serializable {
     @Override
     public void addCoveredGoal(TestFitnessFunction goal) {
         coveredGoals.add(goal);
+        int a =1;
         // TODO: somehow adds the same goal more than once (fitnessfunction.equals()?)
     }
 

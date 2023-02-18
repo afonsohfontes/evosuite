@@ -208,4 +208,8 @@ public abstract class TestFitnessFunction
     public abstract String getTargetClass();
 
     public abstract String getTargetMethod();
+
+    public double getFitness_TestCaseLevel(TestChromosome test, ExecutionResult result) {
+        return 1.0;
+    };
 }

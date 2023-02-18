@@ -25,20 +25,30 @@ public class PrivateMixAfonsoTest {
 */
     public void example(int nn) {
             float number = 1.0F;
-            if (getN(nn)){
+            if (getRoot(nn)){
                 number = 0.0F;
             }
         }
 
-        private boolean getN(int n){
-            if (n>20) {
-                return checkIfOK();
-            }    else{
-                return false;
+    private boolean getRoot(int n){
+        if (n>20 && n<1001) {
+            return check21_1000();
+        }    else{
+            if (n>1000){
+                return checkGreater1000();
             }
+            return checkIfBellow20();
         }
 
-        private boolean checkIfOK(){
-                 return true;
-        }
+    }
+
+    private boolean check21_1000(){
+        return true;
+    }
+    private boolean checkIfBellow20(){
+        return false;
+    }
+    private boolean checkGreater1000(){
+        return true;
+    }
 }

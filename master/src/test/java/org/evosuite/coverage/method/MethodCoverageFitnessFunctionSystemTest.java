@@ -19,9 +19,7 @@
  */
 package org.evosuite.coverage.method;
 
-//import com.examples.with.different.packagename.ClassWithPrivateInnerClass;
-//import com.examples.with.different.packagename.ClassWithInnerClass;
-import com.examples.with.different.packagename.reflection.PrivateMixAfonsoTest;
+import com.examples.with.different.packagename.ClassWithInnerClass;
 import com.examples.with.different.packagename.Compositional;
 
 import com.examples.with.different.packagename.contracts.EqualsHashCode;
@@ -84,7 +82,7 @@ public class MethodCoverageFitnessFunctionSystemTest extends SystemTestBase {
         String targetClass = SingleMethod.class.getCanonicalName();
         Properties.TARGET_CLASS = targetClass;
 
-        String[] command = new String[]{"-generateSuite", "-class", targetClass, "-Dalgorithm=MONOTONIC_GA"};
+        String[] command = new String[]{"-generateSuite", "-class", targetClass};
         Object result = evosuite.parseCommandLine(command);
         GeneticAlgorithm<TestSuiteChromosome> ga = getGAFromResult(result);
         TestSuiteChromosome best = ga.getBestIndividual();
@@ -113,7 +111,7 @@ public class MethodCoverageFitnessFunctionSystemTest extends SystemTestBase {
         String targetClass = FlagExample3.class.getCanonicalName();
         Properties.TARGET_CLASS = targetClass;
 
-        String[] command = new String[]{"-generateSuite", "-class", targetClass, "-Dalgorithm=MONOTONIC_GA"};
+        String[] command = new String[]{"-generateSuite", "-class", targetClass};
         Object result = evosuite.parseCommandLine(command);
         GeneticAlgorithm<TestSuiteChromosome> ga = getGAFromResult(result);
         TestSuiteChromosome best = ga.getBestIndividual();
@@ -142,7 +140,7 @@ public class MethodCoverageFitnessFunctionSystemTest extends SystemTestBase {
         String targetClass = Compositional.class.getCanonicalName();
         Properties.TARGET_CLASS = targetClass;
 
-        String[] command = new String[]{"-generateSuite", "-class", targetClass, "-Dalgorithm=MONOTONIC_GA"};
+        String[] command = new String[]{"-generateSuite", "-class", targetClass};
         Object result = evosuite.parseCommandLine(command);
         GeneticAlgorithm<TestSuiteChromosome> ga = getGAFromResult(result);
         TestSuiteChromosome best = ga.getBestIndividual();
@@ -161,7 +159,7 @@ public class MethodCoverageFitnessFunctionSystemTest extends SystemTestBase {
         String targetClass = EqualsHashCode.class.getCanonicalName();
         Properties.TARGET_CLASS = targetClass;
 
-        String[] command = new String[]{"-generateSuite", "-class", targetClass, "-Dalgorithm=MONOTONIC_GA"};
+        String[] command = new String[]{"-generateSuite", "-class", targetClass};//, "-Dalgorithm=MONOTONIC_GA"};
 
         Object result = evosuite.parseCommandLine(command);
 
@@ -179,10 +177,10 @@ public class MethodCoverageFitnessFunctionSystemTest extends SystemTestBase {
 
         EvoSuite evosuite = new EvoSuite();
 
-        String targetClass = PrivateMixAfonsoTest.class.getCanonicalName();
+        String targetClass = ClassWithInnerClass.class.getCanonicalName();
         Properties.TARGET_CLASS = targetClass;
 
-        String[] command = new String[]{"-generateSuite", "-class", targetClass, "-Dalgorithm=MONOTONIC_GA"};
+        String[] command = new String[]{"-generateSuite", "-class", targetClass};
         Object result = evosuite.parseCommandLine(command);
         GeneticAlgorithm<TestSuiteChromosome> ga = getGAFromResult(result);
         TestSuiteChromosome best = ga.getBestIndividual();
@@ -200,7 +198,7 @@ public class MethodCoverageFitnessFunctionSystemTest extends SystemTestBase {
         String targetClass = ConstructorWithException.class.getCanonicalName();
         Properties.TARGET_CLASS = targetClass;
 
-        String[] command = new String[]{"-generateSuite", "-class", targetClass, "-Dalgorithm=MONOTONIC_GA"};
+        String[] command = new String[]{"-generateSuite", "-class", targetClass};
 
         Object result = evosuite.parseCommandLine(command);
         GeneticAlgorithm<TestSuiteChromosome> ga = getGAFromResult(result);

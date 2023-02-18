@@ -24,6 +24,7 @@ import org.evosuite.ga.archive.Archive;
 import org.evosuite.testcase.TestChromosome;
 import org.evosuite.testcase.TestFitnessFunction;
 import org.evosuite.testcase.execution.ExecutionResult;
+import org.evosuite.testcase.execution.MethodCall;
 import org.evosuite.testcase.statements.ConstructorStatement;
 import org.evosuite.testcase.statements.EntityWithParametersStatement;
 import org.evosuite.testcase.statements.MethodStatement;
@@ -38,7 +39,7 @@ import java.util.*;
 
 public class PrivateMethodCoverageTestFitness extends TestFitnessFunction {
 
-    private static final long serialVersionUID = 1624503060256855484L;
+    //private static final long serialVersionUID = 1624503060256855484L;
 
     protected final String className;
     protected final String methodName;
@@ -51,6 +52,7 @@ public class PrivateMethodCoverageTestFitness extends TestFitnessFunction {
     public PrivateMethodCoverageTestFitness(String className, String methodName) {
         this.className = Objects.requireNonNull(className, "className cannot be null");
         this.methodName = Objects.requireNonNull(methodName, "methodName cannot be null");
+        //
     }
 
     public String getClassName() {
@@ -68,13 +70,45 @@ public class PrivateMethodCoverageTestFitness extends TestFitnessFunction {
         return sum;
     }
 
-/*
+    /*
+    TEST SUITE LEVEL
+    @Override
+    public double getFitness(TestChromosome individual, ExecutionResult result) {
+        double fitness = 1.0;
+        Set<String> coveredMethods = result.getTrace().getCoveredMethods();
+
+        Map<String, Integer> coveredMethodsCount = result.getTrace().getMethodExecutionCount();
+        for (String str : coveredMethods) {
+            if (str.contains(className) && str.contains(methodName)) {
+                fitness = 0.0;
+        //        if (coveredMethodsCount.get(str) >=6){
+        //            individual.getTestCase().addCoveredGoal(this); // when and where should the goal be marked as completed?
+        //        }
+            }
+        }
+        if (fitness==0){
+            individual.getTestCase().addCoveredGoal(this);
+        }
+        updateIndividual(individual, fitness);
+
+        if (Properties.TEST_ARCHIVE) {
+            Archive.getArchiveInstance().updateArchive(this, individual, fitness);
+        }
+
+        return fitness;
+    }
+
+
+     */
+
+    /* TEST CASE LEVEL
+*/
     @Override
     public double getFitness(TestChromosome individual, ExecutionResult result) {
 
-        double fitness = 1.0;
-        Class<?> c = Properties.getInitializedTargetClass();
 
+/*
+        Class<?> c = Properties.getInitializedTargetClass();
         List<Object> privateMethods = new ArrayList<Object>();
         List<Object> publicMethods = new ArrayList<Object>();
         for (Method method : c.getDeclaredMethods()) {
@@ -87,73 +121,33 @@ public class PrivateMethodCoverageTestFitness extends TestFitnessFunction {
                 }
             }
         }
-
+  */
         Set<String> coveredMethods = result.getTrace().getCoveredMethods();
 
         Map<String, Integer> coveredMethodsCount = result.getTrace().getMethodExecutionCount();
-        float scoreMax = (float) (1.0 / privateMethods.size());
+
+        float scoreMax = (float) (1);
         double fitnessLocal = 0.0;
-        for (Object pMethod : privateMethods) {
             for (String str : coveredMethods) {
-                String a = pMethod.toString();
-                if (str.contains(a)) {
+                if (str.contains(className) && str.contains(methodName)) {
                     //make sure it the same number of methods is called
                     int n = coveredMethodsCount.get(str);
                     float t = sumOfGP(scoreMax / 2, 0.5F, n);
                     fitnessLocal = fitnessLocal + t;
-
-                }
-            }
-        }
-        fitness = 1 - fitnessLocal;
-
-        //maybe call / track goals here ex: add 1 goal per private method / ex2: add a nr of calls per method
-        // see method coverage
-        updateIndividual(individual, fitness);
-        // UNDERSTAND GOALS / SET OF GOALS / AND HOW THEY ARE HANDLED
-        // TRY TO GET/IMPLEMENT DEFECTS4J (build ar file and replace evosuite in defcts for J)
-        //USE JAVA 8 TO MAKE SURE IT WORKS WITH DEFECTS4J
-
-
-        if (fitness <= scoreMax/2) {
-            individual.getTestCase().addCoveredGoal(this);
-        }
-        if (Properties.TEST_ARCHIVE) {
-            Archive.getArchiveInstance().updateArchive(this, individual, fitness);
-        }
-        return fitness;
-    }
-*/
-
-
-    @Override
-    public double getFitness(TestChromosome individual, ExecutionResult result) {
-        double fitness = 1.0;
-
-        List<Integer> exceptionPositions = asSortedList(result.getPositionsWhereExceptionsWereThrown());
-        for (String stmt : result.getTrace().getCoveredMethods()) {
-
-                if (stmt.contains(className) && stmt.contains(methodName)) {
-                    fitness = 0.0;
                     break;
                 }
-        }
+            }
 
+        double fitness = 1 - fitnessLocal;
+
+        if (fitness<=0.02) {fitness = 0.0;}  // anything lower than 0.02 means the method was called at least 6 times
         updateIndividual(individual, fitness);
-
         if (fitness == 0.0) {
             individual.getTestCase().addCoveredGoal(this);
         }
-
         if (Properties.TEST_ARCHIVE) {
             Archive.getArchiveInstance().updateArchive(this, individual, fitness);
         }
-
-
-
-
-
-
         return fitness;
     }
 

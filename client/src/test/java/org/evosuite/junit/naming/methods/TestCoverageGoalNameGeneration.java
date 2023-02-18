@@ -29,7 +29,7 @@ import org.evosuite.coverage.io.input.InputCoverageTestFitness;
 import org.evosuite.coverage.io.output.OutputCoverageGoal;
 import org.evosuite.coverage.io.output.OutputCoverageTestFitness;
 import org.evosuite.coverage.line.LineCoverageTestFitness;
-import org.evosuite.coverage.privateMethod.PrivateMethodCoverageTestFitness;
+import org.evosuite.coverage.method.MethodCoverageTestFitness;
 import org.evosuite.coverage.method.MethodNoExceptionCoverageTestFitness;
 import org.evosuite.graphs.cfg.BytecodeInstruction;
 import org.evosuite.runtime.mock.java.lang.MockArithmeticException;
@@ -62,7 +62,7 @@ public class TestCoverageGoalNameGeneration {
     @Test
     public void testUniqueMethod() {
         TestCase test = new DefaultTestCase();
-        PrivateMethodCoverageTestFitness goal = new PrivateMethodCoverageTestFitness("FooClass", "toString");
+        MethodCoverageTestFitness goal = new MethodCoverageTestFitness("FooClass", "toString");
         test.addCoveredGoal(goal);
         List<TestCase> tests = new ArrayList<>();
         tests.add(test);
@@ -74,7 +74,7 @@ public class TestCoverageGoalNameGeneration {
     @Test
     public void testUniqueConstructor() {
         TestCase test = new DefaultTestCase();
-        PrivateMethodCoverageTestFitness goal = new PrivateMethodCoverageTestFitness("FooClass", "<init>");
+        MethodCoverageTestFitness goal = new MethodCoverageTestFitness("FooClass", "<init>");
         test.addCoveredGoal(goal);
         List<TestCase> tests = new ArrayList<>();
         tests.add(test);
@@ -86,12 +86,12 @@ public class TestCoverageGoalNameGeneration {
     @Test
     public void testTwoTestsUniqueMethods() {
         TestCase test1 = new DefaultTestCase();
-        PrivateMethodCoverageTestFitness goal1 = new PrivateMethodCoverageTestFitness("FooClass", "toString");
+        MethodCoverageTestFitness goal1 = new MethodCoverageTestFitness("FooClass", "toString");
         test1.addCoveredGoal(goal1);
 
         TestCase test2 = new DefaultTestCase();
         test2.addStatement(new IntPrimitiveStatement(test2, 0)); // Need to add statements to change hashCode
-        PrivateMethodCoverageTestFitness goal2 = new PrivateMethodCoverageTestFitness("FooClass", "getSomeStuff");
+        MethodCoverageTestFitness goal2 = new MethodCoverageTestFitness("FooClass", "getSomeStuff");
         test2.addCoveredGoal(goal2);
 
 
@@ -106,15 +106,15 @@ public class TestCoverageGoalNameGeneration {
     @Test
     public void testTwoTestsMethodsWithSharedGoals() {
         TestCase test1 = new DefaultTestCase();
-        PrivateMethodCoverageTestFitness goal1 = new PrivateMethodCoverageTestFitness("FooClass", "toString");
+        MethodCoverageTestFitness goal1 = new MethodCoverageTestFitness("FooClass", "toString");
         test1.addCoveredGoal(goal1);
 
         TestCase test2 = new DefaultTestCase();
         test2.addStatement(new IntPrimitiveStatement(test2, 0)); // Need to add statements to change hashCode
-        PrivateMethodCoverageTestFitness goal2 = new PrivateMethodCoverageTestFitness("FooClass", "getSomeStuff");
+        MethodCoverageTestFitness goal2 = new MethodCoverageTestFitness("FooClass", "getSomeStuff");
         test2.addCoveredGoal(goal2);
 
-        PrivateMethodCoverageTestFitness goal3 = new PrivateMethodCoverageTestFitness("FooClass", "doFooBar");
+        MethodCoverageTestFitness goal3 = new MethodCoverageTestFitness("FooClass", "doFooBar");
         test1.addCoveredGoal(goal3);
         test2.addCoveredGoal(goal3);
 
@@ -129,7 +129,7 @@ public class TestCoverageGoalNameGeneration {
     @Test
     public void testMethodWithAndWithoutException() {
         TestCase test1 = new DefaultTestCase();
-        PrivateMethodCoverageTestFitness goal1 = new PrivateMethodCoverageTestFitness("FooClass", "toString()");
+        MethodCoverageTestFitness goal1 = new MethodCoverageTestFitness("FooClass", "toString()");
         test1.addCoveredGoal(goal1);
         MethodNoExceptionCoverageTestFitness goal1a = new MethodNoExceptionCoverageTestFitness("FooClass", "toString()");
         test1.addCoveredGoal(goal1a);
@@ -152,7 +152,7 @@ public class TestCoverageGoalNameGeneration {
     @Test
     public void testMethodWithAndWithoutMockException() {
         TestCase test1 = new DefaultTestCase();
-        PrivateMethodCoverageTestFitness goal1 = new PrivateMethodCoverageTestFitness("FooClass", "toString()");
+        MethodCoverageTestFitness goal1 = new MethodCoverageTestFitness("FooClass", "toString()");
         test1.addCoveredGoal(goal1);
         MethodNoExceptionCoverageTestFitness goal1a = new MethodNoExceptionCoverageTestFitness("FooClass", "toString()");
         test1.addCoveredGoal(goal1a);
@@ -176,12 +176,12 @@ public class TestCoverageGoalNameGeneration {
     @Test
     public void testMethodWithExceptions() {
         TestCase test1 = new DefaultTestCase();
-        PrivateMethodCoverageTestFitness goal1 = new PrivateMethodCoverageTestFitness("FooClass", "toString()");
+        MethodCoverageTestFitness goal1 = new MethodCoverageTestFitness("FooClass", "toString()");
         test1.addCoveredGoal(goal1);
 
         TestCase test2 = new DefaultTestCase();
         test2.addStatement(new IntPrimitiveStatement(test2, 0)); // Need to add statements to change hashCode
-        PrivateMethodCoverageTestFitness goal2 = new PrivateMethodCoverageTestFitness("FooClass", "toString2()");
+        MethodCoverageTestFitness goal2 = new MethodCoverageTestFitness("FooClass", "toString2()");
         test2.addCoveredGoal(goal2);
 
         ExceptionCoverageTestFitness goal3 = new ExceptionCoverageTestFitness("FooClass", "toString()", MockArithmeticException.class, ExceptionCoverageTestFitness.ExceptionType.EXPLICIT);
@@ -200,7 +200,7 @@ public class TestCoverageGoalNameGeneration {
     @Test
     public void testConstructorWithAndWithoutException() {
         TestCase test1 = new DefaultTestCase();
-        PrivateMethodCoverageTestFitness goal1 = new PrivateMethodCoverageTestFitness("FooClass", "<init>()");
+        MethodCoverageTestFitness goal1 = new MethodCoverageTestFitness("FooClass", "<init>()");
         test1.addCoveredGoal(goal1);
         MethodNoExceptionCoverageTestFitness goal1a = new MethodNoExceptionCoverageTestFitness("FooClass", "<init>()");
         test1.addCoveredGoal(goal1a);
@@ -223,7 +223,7 @@ public class TestCoverageGoalNameGeneration {
     @Test
     public void testMethodWithOutputGoals() {
         TestCase test1 = new DefaultTestCase();
-        PrivateMethodCoverageTestFitness goal1 = new PrivateMethodCoverageTestFitness("FooClass", "toString");
+        MethodCoverageTestFitness goal1 = new MethodCoverageTestFitness("FooClass", "toString");
         OutputCoverageGoal outputGoal1 = new OutputCoverageGoal("FooClass", "toString", objectType(), REF_NULL);
         OutputCoverageTestFitness goal2 = new OutputCoverageTestFitness(outputGoal1);
         test1.addCoveredGoal(goal1);
@@ -248,7 +248,7 @@ public class TestCoverageGoalNameGeneration {
     @Test
     public void testMethodWithInputGoals() {
         TestCase test1 = new DefaultTestCase();
-        PrivateMethodCoverageTestFitness goal1 = new PrivateMethodCoverageTestFitness("FooClass", "toString");
+        MethodCoverageTestFitness goal1 = new MethodCoverageTestFitness("FooClass", "toString");
         InputCoverageGoal inputGoal1 = new InputCoverageGoal("FooClass", "toString", 0, objectType(), REF_NULL);
         InputCoverageTestFitness goal2 = new InputCoverageTestFitness(inputGoal1);
         test1.addCoveredGoal(goal1);
@@ -273,7 +273,7 @@ public class TestCoverageGoalNameGeneration {
     @Test
     public void testMethodWithInputOutputGoals() {
         TestCase test1 = new DefaultTestCase();
-        PrivateMethodCoverageTestFitness goal1 = new PrivateMethodCoverageTestFitness("FooClass", "toString");
+        MethodCoverageTestFitness goal1 = new MethodCoverageTestFitness("FooClass", "toString");
         InputCoverageGoal inputGoal1 = new InputCoverageGoal("FooClass", "toString", 0, objectType(), REF_NULL);
         InputCoverageTestFitness goal2 = new InputCoverageTestFitness(inputGoal1);
         test1.addCoveredGoal(goal1);
@@ -298,17 +298,17 @@ public class TestCoverageGoalNameGeneration {
     @Test
     public void testOverloadedMethod() {
         TestCase test1 = new DefaultTestCase();
-        PrivateMethodCoverageTestFitness goal1 = new PrivateMethodCoverageTestFitness("FooClass", "foo()");
+        MethodCoverageTestFitness goal1 = new MethodCoverageTestFitness("FooClass", "foo()");
         test1.addCoveredGoal(goal1);
 
         TestCase test2 = new DefaultTestCase();
         test2.addStatement(new IntPrimitiveStatement(test2, 0)); // Need to add statements to change hashCode
-        PrivateMethodCoverageTestFitness goal2 = new PrivateMethodCoverageTestFitness("FooClass", "foo(I)");
+        MethodCoverageTestFitness goal2 = new MethodCoverageTestFitness("FooClass", "foo(I)");
         test2.addCoveredGoal(goal2);
 
         TestCase test3 = new DefaultTestCase();
         test3.addStatement(new IntPrimitiveStatement(test3, 0)); // Need to add statements to change hashCode
-        PrivateMethodCoverageTestFitness goal3 = new PrivateMethodCoverageTestFitness("FooClass", "foo(II)");
+        MethodCoverageTestFitness goal3 = new MethodCoverageTestFitness("FooClass", "foo(II)");
         test3.addCoveredGoal(goal3);
 
 
@@ -325,14 +325,14 @@ public class TestCoverageGoalNameGeneration {
     @Test
     public void testOverloadedMethodDifferentArgArrayType() {
         TestCase test1 = new DefaultTestCase();
-        PrivateMethodCoverageTestFitness goal1 = new PrivateMethodCoverageTestFitness("FooClass", "foo([B)");
+        MethodCoverageTestFitness goal1 = new MethodCoverageTestFitness("FooClass", "foo([B)");
         test1.addCoveredGoal(goal1);
         OutputCoverageTestFitness outputGoal = new OutputCoverageTestFitness(new OutputCoverageGoal("FooClass", "foo", stringType(), BOOL_FALSE));
         test1.addCoveredGoal(outputGoal);
 
         TestCase test2 = new DefaultTestCase();
         test2.addStatement(new IntPrimitiveStatement(test2, 0)); // Need to add statements to change hashCode
-        PrivateMethodCoverageTestFitness goal2 = new PrivateMethodCoverageTestFitness("FooClass", "foo([I)");
+        MethodCoverageTestFitness goal2 = new MethodCoverageTestFitness("FooClass", "foo([I)");
         test2.addCoveredGoal(goal2);
         test2.addCoveredGoal(outputGoal);
 
@@ -346,8 +346,8 @@ public class TestCoverageGoalNameGeneration {
 
     @Test
     public void testMultipleRedundantGoals() {
-        PrivateMethodCoverageTestFitness methodGoal1 = new PrivateMethodCoverageTestFitness("FooClass", "foo(SS)Z");
-        PrivateMethodCoverageTestFitness methodGoal2 = new PrivateMethodCoverageTestFitness("FooClass", "foo(Ljava/lang/Object;Ljava/lang/Object;)Z");
+        MethodCoverageTestFitness methodGoal1 = new MethodCoverageTestFitness("FooClass", "foo(SS)Z");
+        MethodCoverageTestFitness methodGoal2 = new MethodCoverageTestFitness("FooClass", "foo(Ljava/lang/Object;Ljava/lang/Object;)Z");
 
         OutputCoverageTestFitness outputGoal1 = new OutputCoverageTestFitness(new OutputCoverageGoal("FooClass", "foo(SS)Z", Type.BOOLEAN_TYPE, BOOL_FALSE));
         OutputCoverageTestFitness outputGoal2 = new OutputCoverageTestFitness(new OutputCoverageGoal("FooClass", "foo(Ljava/lang/Object;Ljava/lang/Object;)Z", Type.BOOLEAN_TYPE, BOOL_FALSE));
@@ -372,12 +372,12 @@ public class TestCoverageGoalNameGeneration {
     @Test
     public void testOverloadedMethodWithObject() {
         TestCase test1 = new DefaultTestCase();
-        PrivateMethodCoverageTestFitness goal1 = new PrivateMethodCoverageTestFitness("FooClass", "foo()");
+        MethodCoverageTestFitness goal1 = new MethodCoverageTestFitness("FooClass", "foo()");
         test1.addCoveredGoal(goal1);
 
         TestCase test2 = new DefaultTestCase();
         test2.addStatement(new IntPrimitiveStatement(test2, 0)); // Need to add statements to change hashCode
-        PrivateMethodCoverageTestFitness goal2 = new PrivateMethodCoverageTestFitness("FooClass", "foo(Ljava/util/List;)");
+        MethodCoverageTestFitness goal2 = new MethodCoverageTestFitness("FooClass", "foo(Ljava/util/List;)");
         test2.addCoveredGoal(goal2);
 
 
@@ -392,17 +392,17 @@ public class TestCoverageGoalNameGeneration {
     @Test
     public void testOverloadedMethodWithArray() {
         TestCase test1 = new DefaultTestCase();
-        PrivateMethodCoverageTestFitness goal1 = new PrivateMethodCoverageTestFitness("FooClass", "foo(I)");
+        MethodCoverageTestFitness goal1 = new MethodCoverageTestFitness("FooClass", "foo(I)");
         test1.addCoveredGoal(goal1);
 
         TestCase test2 = new DefaultTestCase();
         test2.addStatement(new IntPrimitiveStatement(test2, 0)); // Need to add statements to change hashCode
-        PrivateMethodCoverageTestFitness goal2 = new PrivateMethodCoverageTestFitness("FooClass", "foo([I)");
+        MethodCoverageTestFitness goal2 = new MethodCoverageTestFitness("FooClass", "foo([I)");
         test2.addCoveredGoal(goal2);
 
         TestCase test3 = new DefaultTestCase();
         test3.addStatement(new IntPrimitiveStatement(test3, 0)); // Need to add statements to change hashCode
-        PrivateMethodCoverageTestFitness goal3 = new PrivateMethodCoverageTestFitness("FooClass", "foo([[I)");
+        MethodCoverageTestFitness goal3 = new MethodCoverageTestFitness("FooClass", "foo([[I)");
         test3.addCoveredGoal(goal3);
 
 
@@ -423,7 +423,7 @@ public class TestCoverageGoalNameGeneration {
         BytecodeInstruction bi = mock(BytecodeInstruction.class);
         when(b1.getInstruction()).thenReturn(bi);
         TestCase test1 = new DefaultTestCase();
-        PrivateMethodCoverageTestFitness methodGoal = new PrivateMethodCoverageTestFitness("FooClass", "toString");
+        MethodCoverageTestFitness methodGoal = new MethodCoverageTestFitness("FooClass", "toString");
         test1.addCoveredGoal(methodGoal);
         BranchCoverageTestFitness branchGoal1 = new BranchCoverageTestFitness(new BranchCoverageGoal(b1, true, "FooClass", "toStringBarFooBlubb", 0));
         test1.addCoveredGoal(branchGoal1);
@@ -446,9 +446,9 @@ public class TestCoverageGoalNameGeneration {
     @Test
     public void testTwoUniqueMethods() {
         TestCase test = new DefaultTestCase();
-        PrivateMethodCoverageTestFitness goal1 = new PrivateMethodCoverageTestFitness("FooClass", "foo");
+        MethodCoverageTestFitness goal1 = new MethodCoverageTestFitness("FooClass", "foo");
         test.addCoveredGoal(goal1);
-        PrivateMethodCoverageTestFitness goal2 = new PrivateMethodCoverageTestFitness("FooClass", "bar");
+        MethodCoverageTestFitness goal2 = new MethodCoverageTestFitness("FooClass", "bar");
         test.addCoveredGoal(goal2);
         List<TestCase> tests = new ArrayList<>();
         tests.add(test);
@@ -460,9 +460,9 @@ public class TestCoverageGoalNameGeneration {
     @Test
     public void testTwoUniqueMethodsWithLongNames() {
         TestCase test = new DefaultTestCase();
-        PrivateMethodCoverageTestFitness goal1 = new PrivateMethodCoverageTestFitness("FooClass", "loremIpsumDolorSitAmetConsectetuerAdipiscingElit()V");
+        MethodCoverageTestFitness goal1 = new MethodCoverageTestFitness("FooClass", "loremIpsumDolorSitAmetConsectetuerAdipiscingElit()V");
         test.addCoveredGoal(goal1);
-        PrivateMethodCoverageTestFitness goal2 = new PrivateMethodCoverageTestFitness("FooClass", "sedDiamNonummNibhEuismodTinciduntUtLaoreetDoloreMagnaAliquamEratVolutpat()V");
+        MethodCoverageTestFitness goal2 = new MethodCoverageTestFitness("FooClass", "sedDiamNonummNibhEuismodTinciduntUtLaoreetDoloreMagnaAliquamEratVolutpat()V");
         test.addCoveredGoal(goal2);
         List<TestCase> tests = new ArrayList<>();
         tests.add(test);
@@ -478,11 +478,11 @@ public class TestCoverageGoalNameGeneration {
         VariableReference callee = test.addStatement(new ConstructorStatement(test, gc, new ArrayList<>()));
         GenericMethod gm = new GenericMethod(Object.class.getMethod("toString"), Object.class);
         test.addStatement(new MethodStatement(test, gm, callee, new ArrayList<>()));
-        PrivateMethodCoverageTestFitness goal1 = new PrivateMethodCoverageTestFitness("FooClass", "toString()Ljava/lang/String;");
+        MethodCoverageTestFitness goal1 = new MethodCoverageTestFitness("FooClass", "toString()Ljava/lang/String;");
         test.addCoveredGoal(goal1);
-        PrivateMethodCoverageTestFitness goal2 = new PrivateMethodCoverageTestFitness("FooClass", "foo()Ljava/lang/String;");
+        MethodCoverageTestFitness goal2 = new MethodCoverageTestFitness("FooClass", "foo()Ljava/lang/String;");
         test.addCoveredGoal(goal2);
-        PrivateMethodCoverageTestFitness goal3 = new PrivateMethodCoverageTestFitness("FooClass", "bar()Ljava/lang/String;");
+        MethodCoverageTestFitness goal3 = new MethodCoverageTestFitness("FooClass", "bar()Ljava/lang/String;");
         test.addCoveredGoal(goal3);
         List<TestCase> tests = new ArrayList<>();
         tests.add(test);
@@ -531,9 +531,9 @@ public class TestCoverageGoalNameGeneration {
     @Test
     public void testTwoMethodsOneWithException() {
         TestCase test = new DefaultTestCase();
-        PrivateMethodCoverageTestFitness goal1 = new PrivateMethodCoverageTestFitness("FooClass", "foo");
+        MethodCoverageTestFitness goal1 = new MethodCoverageTestFitness("FooClass", "foo");
         test.addCoveredGoal(goal1);
-        PrivateMethodCoverageTestFitness goal2 = new PrivateMethodCoverageTestFitness("FooClass", "bar");
+        MethodCoverageTestFitness goal2 = new MethodCoverageTestFitness("FooClass", "bar");
         test.addCoveredGoal(goal2);
         ExceptionCoverageTestFitness goal3 = new ExceptionCoverageTestFitness("FooClass", "bar", RuntimeException.class, ExceptionCoverageTestFitness.ExceptionType.EXPLICIT);
         test.addCoveredGoal(goal3);
@@ -551,11 +551,11 @@ public class TestCoverageGoalNameGeneration {
         TestCase test2 = new DefaultTestCase();
         test2.addStatement(new IntPrimitiveStatement(test2, 0)); // Need to add statements to change hashCode
 
-        PrivateMethodCoverageTestFitness goal1 = new PrivateMethodCoverageTestFitness("FooClass", "foo");
+        MethodCoverageTestFitness goal1 = new MethodCoverageTestFitness("FooClass", "foo");
         test1.addCoveredGoal(goal1);
         test2.addCoveredGoal(goal1);
 
-        PrivateMethodCoverageTestFitness goal2 = new PrivateMethodCoverageTestFitness("FooClass", "bar()I");
+        MethodCoverageTestFitness goal2 = new MethodCoverageTestFitness("FooClass", "bar()I");
         test1.addCoveredGoal(goal2);
         test2.addCoveredGoal(goal2);
 
@@ -577,9 +577,9 @@ public class TestCoverageGoalNameGeneration {
     @Test
     public void testTwoConstructorsDifferentClasses() {
         TestCase test = new DefaultTestCase();
-        PrivateMethodCoverageTestFitness goal1 = new PrivateMethodCoverageTestFitness("Foo", "<init>()");
+        MethodCoverageTestFitness goal1 = new MethodCoverageTestFitness("Foo", "<init>()");
         test.addCoveredGoal(goal1);
-        PrivateMethodCoverageTestFitness goal2 = new PrivateMethodCoverageTestFitness("Bar", "<init>()");
+        MethodCoverageTestFitness goal2 = new MethodCoverageTestFitness("Bar", "<init>()");
         test.addCoveredGoal(goal2);
         List<TestCase> tests = new ArrayList<>();
         tests.add(test);
@@ -591,9 +591,9 @@ public class TestCoverageGoalNameGeneration {
     @Test
     public void testTwoConstructorsSameClass() {
         TestCase test = new DefaultTestCase();
-        PrivateMethodCoverageTestFitness goal1 = new PrivateMethodCoverageTestFitness("FooClass", "<init>()");
+        MethodCoverageTestFitness goal1 = new MethodCoverageTestFitness("FooClass", "<init>()");
         test.addCoveredGoal(goal1);
-        PrivateMethodCoverageTestFitness goal2 = new PrivateMethodCoverageTestFitness("FooClass", "<init>(I)");
+        MethodCoverageTestFitness goal2 = new MethodCoverageTestFitness("FooClass", "<init>(I)");
         test.addCoveredGoal(goal2);
         List<TestCase> tests = new ArrayList<>();
         tests.add(test);
@@ -605,9 +605,9 @@ public class TestCoverageGoalNameGeneration {
     @Test
     public void testConstructorAndMethod() {
         TestCase test = new DefaultTestCase();
-        PrivateMethodCoverageTestFitness goal1 = new PrivateMethodCoverageTestFitness("Foo", "<init>()");
+        MethodCoverageTestFitness goal1 = new MethodCoverageTestFitness("Foo", "<init>()");
         test.addCoveredGoal(goal1);
-        PrivateMethodCoverageTestFitness goal2 = new PrivateMethodCoverageTestFitness("Foo", "bar()I");
+        MethodCoverageTestFitness goal2 = new MethodCoverageTestFitness("Foo", "bar()I");
         test.addCoveredGoal(goal2);
         List<TestCase> tests = new ArrayList<>();
         tests.add(test);
@@ -620,7 +620,7 @@ public class TestCoverageGoalNameGeneration {
     @Test
     public void testConstructorWithFullyQualifiedClassName() {
         TestCase test = new DefaultTestCase();
-        PrivateMethodCoverageTestFitness goal = new PrivateMethodCoverageTestFitness("org.package.name.FooClass", "<init>()");
+        MethodCoverageTestFitness goal = new MethodCoverageTestFitness("org.package.name.FooClass", "<init>()");
         test.addCoveredGoal(goal);
         List<TestCase> tests = new ArrayList<>();
         tests.add(test);
@@ -644,16 +644,16 @@ public class TestCoverageGoalNameGeneration {
     @Test
     public void testOverloadedConstructor() {
         TestCase test1 = new DefaultTestCase();
-        PrivateMethodCoverageTestFitness goal1 = new PrivateMethodCoverageTestFitness(ClassWithOverloadedConstructor.class.getCanonicalName(), "<init>()");
+        MethodCoverageTestFitness goal1 = new MethodCoverageTestFitness(ClassWithOverloadedConstructor.class.getCanonicalName(), "<init>()");
         test1.addCoveredGoal(goal1);
 
         TestCase test2 = new DefaultTestCase();
-        PrivateMethodCoverageTestFitness goal2 = new PrivateMethodCoverageTestFitness(ClassWithOverloadedConstructor.class.getCanonicalName(), "<init>(Ljava/lang/String;)");
+        MethodCoverageTestFitness goal2 = new MethodCoverageTestFitness(ClassWithOverloadedConstructor.class.getCanonicalName(), "<init>(Ljava/lang/String;)");
         test2.addStatement(new IntPrimitiveStatement(test2, 0)); // Need to add statements to change hashCode
         test2.addCoveredGoal(goal2);
 
         TestCase test3 = new DefaultTestCase();
-        PrivateMethodCoverageTestFitness goal3 = new PrivateMethodCoverageTestFitness(ClassWithOverloadedConstructor.class.getCanonicalName(), "<init>(II)");
+        MethodCoverageTestFitness goal3 = new MethodCoverageTestFitness(ClassWithOverloadedConstructor.class.getCanonicalName(), "<init>(II)");
         test3.addStatement(new IntPrimitiveStatement(test3, 1)); // Need to add statements to change hashCode
         test3.addCoveredGoal(goal3);
 
@@ -795,7 +795,7 @@ public class TestCoverageGoalNameGeneration {
     @Test
     public void testLineCoverageIsExcluded() {
         TestCase test1 = new DefaultTestCase();
-        PrivateMethodCoverageTestFitness methodGoal = new PrivateMethodCoverageTestFitness("FooClass", "toString()");
+        MethodCoverageTestFitness methodGoal = new MethodCoverageTestFitness("FooClass", "toString()");
         test1.addCoveredGoal(methodGoal);
         LineCoverageTestFitness lineGoal1 = new LineCoverageTestFitness("FooClass", "toString()", 0);
         test1.addCoveredGoal(lineGoal1);
@@ -821,7 +821,7 @@ public class TestCoverageGoalNameGeneration {
         // T2: A, C -> C
         // T3: A, C, B, D -> D
         TestCase test1 = new DefaultTestCase();
-        PrivateMethodCoverageTestFitness methodGoal = new PrivateMethodCoverageTestFitness("FooClass", "foo(I)I");
+        MethodCoverageTestFitness methodGoal = new MethodCoverageTestFitness("FooClass", "foo(I)I");
         test1.addCoveredGoal(methodGoal);
         OutputCoverageGoal outputGoalHelper = new OutputCoverageGoal("FooClass", "foo(I)I", Type.INT_TYPE, NUM_ZERO);
         OutputCoverageTestFitness outputGoal1 = new OutputCoverageTestFitness(outputGoalHelper);
@@ -836,7 +836,7 @@ public class TestCoverageGoalNameGeneration {
         test2.addCoveredGoal(inputGoal1);
 
         TestCase test3 = new DefaultTestCase();
-        PrivateMethodCoverageTestFitness methodGoal2 = new PrivateMethodCoverageTestFitness("FooClass", "toString()L/java/lang/String;");
+        MethodCoverageTestFitness methodGoal2 = new MethodCoverageTestFitness("FooClass", "toString()L/java/lang/String;");
         test3.addCoveredGoal(methodGoal2);
 
         test3.addCoveredGoal(methodGoal);
@@ -861,7 +861,7 @@ public class TestCoverageGoalNameGeneration {
         // T3: A, B, C -> B & C
 
         TestCase test1 = new DefaultTestCase();
-        PrivateMethodCoverageTestFitness methodGoal = new PrivateMethodCoverageTestFitness("FooClass", "foo(I)I");
+        MethodCoverageTestFitness methodGoal = new MethodCoverageTestFitness("FooClass", "foo(I)I");
         test1.addCoveredGoal(methodGoal);
         OutputCoverageGoal outputGoalHelper = new OutputCoverageGoal("FooClass", "foo(I)I", Type.INT_TYPE, NUM_ZERO);
         OutputCoverageTestFitness outputGoal1 = new OutputCoverageTestFitness(outputGoalHelper);
@@ -898,7 +898,7 @@ public class TestCoverageGoalNameGeneration {
         // T3: B, C
 
         TestCase test1 = new DefaultTestCase();
-        PrivateMethodCoverageTestFitness methodGoal = new PrivateMethodCoverageTestFitness("FooClass", "foo(I)I");
+        MethodCoverageTestFitness methodGoal = new MethodCoverageTestFitness("FooClass", "foo(I)I");
         test1.addCoveredGoal(methodGoal);
         OutputCoverageGoal outputGoalHelper = new OutputCoverageGoal("FooClass", "foo(I)I", Type.INT_TYPE, NUM_ZERO);
         OutputCoverageTestFitness outputGoal1 = new OutputCoverageTestFitness(outputGoalHelper);
@@ -934,9 +934,9 @@ public class TestCoverageGoalNameGeneration {
         // T2: A, C
         // T3: B, C
 
-        PrivateMethodCoverageTestFitness methodGoal1 = new PrivateMethodCoverageTestFitness("FooClass", "foo(I)I");
-        PrivateMethodCoverageTestFitness methodGoal2 = new PrivateMethodCoverageTestFitness("FooClass", "bar(I)I");
-        PrivateMethodCoverageTestFitness methodGoal3 = new PrivateMethodCoverageTestFitness("FooClass", "zoo(I)I");
+        MethodCoverageTestFitness methodGoal1 = new MethodCoverageTestFitness("FooClass", "foo(I)I");
+        MethodCoverageTestFitness methodGoal2 = new MethodCoverageTestFitness("FooClass", "bar(I)I");
+        MethodCoverageTestFitness methodGoal3 = new MethodCoverageTestFitness("FooClass", "zoo(I)I");
 
         TestCase test1 = new DefaultTestCase();
         test1.addCoveredGoal(methodGoal1);
@@ -973,10 +973,10 @@ public class TestCoverageGoalNameGeneration {
         // T6: C, D
 
         Randomness.setSeed(0);
-        PrivateMethodCoverageTestFitness methodGoal1 = new PrivateMethodCoverageTestFitness("FooClass", "foo(I)I");
-        PrivateMethodCoverageTestFitness methodGoal2 = new PrivateMethodCoverageTestFitness("FooClass", "bar(I)I");
-        PrivateMethodCoverageTestFitness methodGoal3 = new PrivateMethodCoverageTestFitness("FooClass", "zoo(I)I");
-        PrivateMethodCoverageTestFitness methodGoal4 = new PrivateMethodCoverageTestFitness("FooClass", "gnu(I)I");
+        MethodCoverageTestFitness methodGoal1 = new MethodCoverageTestFitness("FooClass", "foo(I)I");
+        MethodCoverageTestFitness methodGoal2 = new MethodCoverageTestFitness("FooClass", "bar(I)I");
+        MethodCoverageTestFitness methodGoal3 = new MethodCoverageTestFitness("FooClass", "zoo(I)I");
+        MethodCoverageTestFitness methodGoal4 = new MethodCoverageTestFitness("FooClass", "gnu(I)I");
 
         TestCase test1 = new DefaultTestCase();
         test1.addCoveredGoal(methodGoal1);
@@ -1030,7 +1030,7 @@ public class TestCoverageGoalNameGeneration {
         // T2: A, C
         // T3: A, B, C
         TestCase test1 = new DefaultTestCase();
-        PrivateMethodCoverageTestFitness methodGoal = new PrivateMethodCoverageTestFitness("FooClass", "foo(I)I");
+        MethodCoverageTestFitness methodGoal = new MethodCoverageTestFitness("FooClass", "foo(I)I");
         test1.addCoveredGoal(methodGoal);
         OutputCoverageGoal outputGoalHelper = new OutputCoverageGoal("FooClass", "foo(I)I", Type.INT_TYPE, NUM_ZERO);
         OutputCoverageTestFitness outputGoal1 = new OutputCoverageTestFitness(outputGoalHelper);
@@ -1066,7 +1066,7 @@ public class TestCoverageGoalNameGeneration {
         // T2: A, I2, O2
         // T3: A, I1, O2
 
-        PrivateMethodCoverageTestFitness methodGoal = new PrivateMethodCoverageTestFitness("FooClass", "foo(I)I");
+        MethodCoverageTestFitness methodGoal = new MethodCoverageTestFitness("FooClass", "foo(I)I");
         OutputCoverageGoal outputGoalHelper1 = new OutputCoverageGoal("FooClass", "foo(I)I", Type.INT_TYPE, NUM_POSITIVE);
         OutputCoverageTestFitness outputGoal1 = new OutputCoverageTestFitness(outputGoalHelper1);
         OutputCoverageGoal outputGoalHelper2 = new OutputCoverageGoal("FooClass", "foo(I)I", Type.INT_TYPE, NUM_NEGATIVE);
@@ -1115,7 +1115,7 @@ public class TestCoverageGoalNameGeneration {
     @Test
     public void testResolveMethodNames() {
 
-        PrivateMethodCoverageTestFitness methodGoal = new PrivateMethodCoverageTestFitness("org.apache.commons.scxml.Builtin", "isMember(Ljava/util/Set;Ljava/lang/String;)Z");
+        MethodCoverageTestFitness methodGoal = new MethodCoverageTestFitness("org.apache.commons.scxml.Builtin", "isMember(Ljava/util/Set;Ljava/lang/String;)Z");
         MethodNoExceptionCoverageTestFitness methodNoExGoal = new MethodNoExceptionCoverageTestFitness("org.apache.commons.scxml.Builtin", "isMember(Ljava/util/Set;Ljava/lang/String;)Z");
 
         OutputCoverageGoal outputGoalHelper1 = new OutputCoverageGoal("org.apache.commons.scxml.Builtin", "isMember(Ljava/util/Set;Ljava/lang/String;)Z", Type.BOOLEAN_TYPE, BOOL_FALSE);

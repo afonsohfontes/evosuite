@@ -167,10 +167,10 @@ public class CoverageCriteriaAnalyzer {
                 return RuntimeVariable.OnlyBranchCoverage;
             case METHODTRACE:
                 return RuntimeVariable.MethodTraceCoverage;
-            case PRIVATEMETHOD:
-                return RuntimeVariable.PrivateMethodCoverage;
             case METHOD:
                 return RuntimeVariable.MethodCoverage;
+            case PRIVATEMETHOD:
+                return RuntimeVariable.PrivateMethodCoverage;
             case METHODNOEXCEPTION:
                 return RuntimeVariable.MethodNoExceptionCoverage;
             case ONLYLINE:
@@ -331,6 +331,8 @@ public class CoverageCriteriaAnalyzer {
                 return RuntimeVariable.MethodTraceCoverageBitString;
             case METHOD:
                 return RuntimeVariable.MethodCoverageBitString;
+            case PRIVATEMETHOD:
+                return RuntimeVariable.PrivateMethodCoverageBitString;
             case METHODNOEXCEPTION:
                 return RuntimeVariable.MethodNoExceptionCoverageBitString;
             case OUTPUT:

@@ -20,7 +20,6 @@
 package org.evosuite.coverage.privateMethod;
 
 import org.evosuite.Properties;
-import org.evosuite.coverage.privateMethod.PrivateMethodCoverageFactory;
 import org.evosuite.ga.archive.Archive;
 import org.evosuite.testcase.TestChromosome;
 import org.evosuite.testcase.TestFitnessFunction;
@@ -34,6 +33,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+
+import static java.util.stream.Collectors.averagingDouble;
 
 /**
  * Fitness function for a whole test suite for all methods, including exceptional behaviour
@@ -51,6 +52,9 @@ public class PrivateMethodCoverageSuiteFitness extends TestSuiteFitnessFunction 
     protected final int totalMethods;
 
     private final Set<String> toRemoveMethods = new LinkedHashSet<>();
+
+    //coveredMethodsCount =
+    private final Map<String, Integer>  suiteFitnessHelper = new HashMap();
     private final Set<String> removedMethods = new LinkedHashSet<>();
 
     // Some stuff for debug output
@@ -66,6 +70,7 @@ public class PrivateMethodCoverageSuiteFitness extends TestSuiteFitnessFunction 
         determineCoverageGoals();
         totalMethods = methodCoverageMap.size();
         logger.info("Total methods: " + totalMethods);
+
     }
 
     /**
@@ -78,8 +83,19 @@ public class PrivateMethodCoverageSuiteFitness extends TestSuiteFitnessFunction 
             if (Properties.TEST_ARCHIVE)
                 Archive.getArchiveInstance().addTarget(goal);
         }
+        //Archive a = Archive.getArchiveInstance();
+       // int b = 0;
     }
 
+
+
+    public double getCoverage() {
+        final double cov = 1.0;
+        assert (cov >= 0.0 && cov <= 1.0) : "Incorrect coverage value " + cov + ". Expected value between 0 and 1";
+        return cov;
+    }
+    
+    
     /**
      * If there is an exception in a super-constructor, then the corresponding
      * constructor might not be included in the execution trace
@@ -125,6 +141,37 @@ public class PrivateMethodCoverageSuiteFitness extends TestSuiteFitnessFunction 
      * @param calledMethods
      * @return
      */
+    protected boolean analyzeTraces_TestCaseLevel(List<ExecutionResult> results, Set<String> calledMethods) {
+        boolean hasTimeoutOrTestException = false;
+
+        for (ExecutionResult result : results) {
+            if (result.hasTimeout() || result.hasTestException()) {
+                hasTimeoutOrTestException = true;
+                continue;
+            }
+            TestChromosome test = new TestChromosome();
+            test.setTestCase(result.test);
+            test.setLastExecutionResult(result);
+            test.setChanged(false);
+           // double fit = goal.getFitness(test, result);
+           for (String methodName : this.methodCoverageMap.keySet()) {
+                TestFitnessFunction goal = this.methodCoverageMap.get(methodName);
+
+                double fit = goal.getFitness(test, result); // archive is updated by the TestFitnessFunction class
+               // if (fit<=0.02) {fit = 0.0;}
+                if (fit == 0.0) {
+                    calledMethods.add(methodName); // helper to count the number of covered goals
+                    this.toRemoveMethods.add(methodName); // goal to not be considered by the next iteration of the evolutionary algorithm
+
+                }
+            }
+            // In case there were exceptions in a constructor
+            handleConstructorExceptions(test, result, calledMethods);
+        }
+        return hasTimeoutOrTestException;
+    }
+
+
     protected boolean analyzeTraces(List<ExecutionResult> results, Set<String> calledMethods) {
         boolean hasTimeoutOrTestException = false;
 
@@ -138,15 +185,98 @@ public class PrivateMethodCoverageSuiteFitness extends TestSuiteFitnessFunction 
             test.setTestCase(result.test);
             test.setLastExecutionResult(result);
             test.setChanged(false);
-           // double fit = goal.getFitness(test, result);
-           for (String methodName : this.methodCoverageMap.keySet()) {
+
+            for (String methodName : this.methodCoverageMap.keySet()) {
                 TestFitnessFunction goal = this.methodCoverageMap.get(methodName);
 
                 double fit = goal.getFitness(test, result); // archive is updated by the TestFitnessFunction class
 
-                if (fit == 0) {// predefined threhold to convert score to goal(?)
+                if (fit == 0.0) {
                     calledMethods.add(methodName); // helper to count the number of covered goals
-                    this.toRemoveMethods.add(methodName); // goal to not be considered by the next iteration of the evolutionary algorithm
+                   //this.toRemoveMethods.add(methodName); // goal to not be considered by the next iteration of the evolutionary algorithm
+                }
+            }
+
+            // In case there were exceptions in a constructor
+            handleConstructorExceptions(test, result, calledMethods);
+        }
+        return hasTimeoutOrTestException;
+    }
+
+
+    static float sumOfGP(float a, float r, double n)
+    {
+        float sum = 0;
+        for (int i = 0; i < n; i++)
+        {
+            sum = sum + a;
+            a = a * r;
+        }
+        return sum;
+    }
+
+    protected void setCoverageGoalsSuiteLevel(List<ExecutionResult> results, ExecutionResult resultStop, String goalMethod){
+        for (ExecutionResult result : results) {
+
+            TestChromosome test = new TestChromosome();
+            test.setTestCase(result.test);
+            test.setLastExecutionResult(result);
+            test.setChanged(false);
+
+            TestFitnessFunction goal = methodCoverageMap.get(goalMethod);
+           // test.getTestCase().addCoveredGoal(goal);
+
+            if (Properties.TEST_ARCHIVE) {
+                Archive.getArchiveInstance().updateArchive(goal, test, 0.0);
+            }
+
+            if (resultStop==result){
+                return;
+            }
+        }
+    }
+
+
+    protected boolean analyzeTraces_TestSuiteLevel(List<ExecutionResult> results, Set<String> calledMethods) {
+        boolean hasTimeoutOrTestException = false;
+
+        Map<String, Double> callsCounter = new HashMap<String, Double>();
+        float scoreMax = (float) 1.0/this.methodCoverageMap.size();
+
+        for (ExecutionResult result : results) {
+            if (result.hasTimeout() || result.hasTestException()) {
+                hasTimeoutOrTestException = true;
+                continue;
+            }
+
+            TestChromosome test = new TestChromosome();
+            test.setTestCase(result.test);
+            test.setLastExecutionResult(result);
+            test.setChanged(false);
+
+            Set<String> coveredMethods = result.getTrace().getCoveredMethods();
+            Map<String, Integer> coveredMethodsCount = result.getTrace().getMethodExecutionCount();
+
+
+
+
+            for (String goalMethod : this.methodCoverageMap.keySet()) {
+                if(callsCounter.containsKey(goalMethod)){
+                }else{
+                    callsCounter.put(goalMethod, 0.0);
+                }
+                for (String str : coveredMethods) {
+                    if ((str.contains(goalMethod)) && !(calledMethods.contains(goalMethod))) {
+                        //make sure it the same number of methods is called
+                       int n = coveredMethodsCount.get(str);
+                        callsCounter.put(goalMethod, callsCounter.get(goalMethod)+n);
+                        double fitness = sumOfGP(scoreMax / 2, 0.5F, callsCounter.get(goalMethod));
+                        if (fitness>= 0.9*scoreMax){ //0.98 or higher means the method was called ? times
+                            calledMethods.add(goalMethod);
+                            this.toRemoveMethods.add(goalMethod);
+                            //setCoverageGoalsSuiteLevel(results, result, goalMethod);
+                        }
+                    }
                 }
             }
             // In case there were exceptions in a constructor
@@ -155,6 +285,8 @@ public class PrivateMethodCoverageSuiteFitness extends TestSuiteFitnessFunction 
         return hasTimeoutOrTestException;
     }
 
+
+
     /**
      * {@inheritDoc}
      * <p>
@@ -162,14 +294,16 @@ public class PrivateMethodCoverageSuiteFitness extends TestSuiteFitnessFunction 
      */
     @Override
     public double getFitness(TestSuiteChromosome suite) {
+
         logger.trace("Calculating PRIVATE method fitness");
         double fitness = 0.0;
 
         List<ExecutionResult> results = runTestSuite(suite);
-
         // Collect stats in the traces
         Set<String> calledMethods = new LinkedHashSet<>();
         boolean hasTimeoutOrTestException = analyzeTraces(results, calledMethods);
+        //boolean hasTimeoutOrTestException = analyzeTraces_TestCaseLevel(results, calledMethods);
+        // boolean hasTimeoutOrTestException = analyzeTraces_TestSuiteLevel(results, calledMethods);
 
         int coveredMethods = calledMethods.size() + this.removedMethods.size();
         int missingMethods = this.totalMethods - coveredMethods;

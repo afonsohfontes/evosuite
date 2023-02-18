@@ -19,16 +19,6 @@
  */
 package org.evosuite.coverage.line;
 
-
-
-
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-
-
-
-
 import org.evosuite.Properties;
 import org.evosuite.TestGenerationContext;
 import org.evosuite.coverage.branch.BranchCoverageFactory;
@@ -117,7 +107,7 @@ public class LineCoverageTestFitness extends TestFitnessFunction {
 
     private void setupDependencies() {
         goalInstruction = BytecodeInstructionPool.getInstance(TestGenerationContext.getInstance().getClassLoaderForSUT()).getFirstInstructionAtLineNumber(className, methodName, line);
-        //TestGenerationContext
+
         if (goalInstruction == null)
             return;
 
@@ -164,18 +154,10 @@ public class LineCoverageTestFitness extends TestFitnessFunction {
     public double getFitness(TestChromosome individual, ExecutionResult result) {
         double fitness = 1.0;
 
-        //Method[] a = className.class.getMethods();
-
-
-
         // Deactivate coverage archive while measuring fitness, since branchcoverage fitness
         // evaluating will attempt to claim coverage for it in the archive
         boolean archive = Properties.TEST_ARCHIVE;
         Properties.TEST_ARCHIVE = false;
-        //boolean a = result.getTrace();
-        //System.out.println(a);
-        System.out.println(result.getTrace().getCoveredLines());
-        Set<Integer> b = result.getTrace().getCoveredLines();
         if (result.getTrace().getCoveredLines().contains(this.line)) {
             fitness = 0.0;
         } else {

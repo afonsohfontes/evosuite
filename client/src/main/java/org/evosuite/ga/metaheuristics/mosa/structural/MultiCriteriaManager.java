@@ -33,10 +33,11 @@ import org.evosuite.coverage.exception.TryCatchCoverageTestFitness;
 import org.evosuite.coverage.io.input.InputCoverageTestFitness;
 import org.evosuite.coverage.io.output.OutputCoverageTestFitness;
 import org.evosuite.coverage.line.LineCoverageTestFitness;
-import org.evosuite.coverage.privateMethod.PrivateMethodCoverageTestFitness;
+import org.evosuite.coverage.method.MethodCoverageTestFitness;
 import org.evosuite.coverage.method.MethodNoExceptionCoverageTestFitness;
 import org.evosuite.coverage.mutation.StrongMutationTestFitness;
 import org.evosuite.coverage.mutation.WeakMutationTestFitness;
+import org.evosuite.coverage.privateMethod.PrivateMethodCoverageTestFitness;
 import org.evosuite.coverage.statement.StatementCoverageTestFitness;
 import org.evosuite.ga.FitnessFunction;
 import org.evosuite.ga.metaheuristics.GeneticAlgorithm;
@@ -125,6 +126,9 @@ public class MultiCriteriaManager extends StructuralGoalManager implements Seria
                     break;
                 case METHOD:
                     addDependencies4Methods();
+                    break;
+                case PRIVATEMETHOD:
+                    addDependencies4PrivateMethods();
                     break;
                 case INPUT:
                     addDependencies4Input();
@@ -241,11 +245,19 @@ public class MultiCriteriaManager extends StructuralGoalManager implements Seria
     }
 
     /**
-     * This methods derive the dependencies between {@link PrivateMethodCoverageTestFitness} and branches.
+     * This methods derive the dependencies between {@link MethodCoverageTestFitness} and branches.
      * Therefore, it is used to update 'this.dependencies'
      */
     private void addDependencies4Methods() {
         logger.debug("Added dependencies for Methods");
+        for (BranchCoverageTestFitness branch : this.dependencies.keySet()) {
+            MethodCoverageTestFitness method = new MethodCoverageTestFitness(branch.getClassName(), branch.getMethod());
+            this.dependencies.get(branch).add(method);
+        }
+    }
+
+    private void addDependencies4PrivateMethods() {
+        logger.debug("Added dependencies for Private Methods");
         for (BranchCoverageTestFitness branch : this.dependencies.keySet()) {
             PrivateMethodCoverageTestFitness method = new PrivateMethodCoverageTestFitness(branch.getClassName(), branch.getMethod());
             this.dependencies.get(branch).add(method);
