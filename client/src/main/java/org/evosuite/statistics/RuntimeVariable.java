@@ -208,6 +208,14 @@ public enum RuntimeVariable {
      * A bit string (0/1) representing whether branches (in order) are covered
      */
     BranchCoverageBitString,
+
+    /**
+     * Afonso inserted:
+     */
+    PrivateMethodFitnessTimeline,
+    PrivateMethodCoverageBitString,
+    //BitstringPrivateMethodCoverageTimeline,
+    BranchBitstringTimeline,
     /**
      * Only the covered branches ratio.
      */
@@ -237,10 +245,8 @@ public enum RuntimeVariable {
     MethodCoverage,
     PrivateMethodCoverage,
     MethodFitnessTimeline,
-    PrivateMethodFitnessTimeline,
     MethodCoverageTimeline,
     MethodCoverageBitString,
-    PrivateMethodCoverageBitString,
     /**
      * The obtained method coverage (only normal behaviour)
      */

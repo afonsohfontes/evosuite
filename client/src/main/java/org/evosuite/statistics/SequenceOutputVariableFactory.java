@@ -21,6 +21,7 @@ package org.evosuite.statistics;
 
 import org.evosuite.Properties;
 import org.evosuite.TimeController;
+import org.evosuite.coverage.branch.BranchCoverageSuiteFitness;
 import org.evosuite.testsuite.TestSuiteChromosome;
 
 import java.util.ArrayList;
@@ -130,6 +131,11 @@ public abstract class SequenceOutputVariableFactory<T extends Number> {
 
                 long diff = preferredTime - timeStamps.get(i - 1);
                 Double cov = values.get(i - 1).doubleValue() + (diff * ratio);
+                /*Double a=1-cov;
+                if (name.contains("BranchCoverageTimeline")){
+                    BranchCoverageSuiteFitness fitness = new BranchCoverageSuiteFitness();
+                    a = fitness.getFitness(suite);
+                }*/
                 return (T) cov; // TODO...type
             }
         }

@@ -201,19 +201,38 @@ public class CoverageCriteriaAnalyzer {
             need to re-instrument and re-run the tests
          */
         boolean recalculate = false;
+        boolean branch = false;
 
         for (Properties.Criterion pc : criteria) {
             LoggingUtils.getEvoLogger().info("* Coverage analysis for criterion " + pc);
-
+            if (pc.name() == "BRANCH"){
+                branch = true;
+            }
             analyzeCoverage(testSuite, pc, recalculate);
         }
+        if (!branch){
+            Properties.Criterion[] newCriterion = new Criterion[]{Properties.Criterion.BRANCH};
+            for (Properties.Criterion pc : newCriterion) {
+                analyzeCoverage(testSuite, pc, recalculate);
+            }
+        }
+
+
+
     }
 
     public static void analyzeCoverage(TestSuiteChromosome testSuite, Properties.Criterion criterion) {
         analyzeCoverage(testSuite, criterion, true);
     }
 
-    private static void analyzeCoverage(TestSuiteChromosome testSuite, Properties.Criterion criterion, boolean recalculate) {
+    public static void analyzeCoverageAfonso(TestSuiteChromosome testSuite, Properties.Criterion criterion, boolean recalculate) {
+
+
+
+    }
+
+
+        private static void analyzeCoverage(TestSuiteChromosome testSuite, Properties.Criterion criterion, boolean recalculate) {
 
         TestSuiteChromosome testSuiteCopy = testSuite.clone();
 

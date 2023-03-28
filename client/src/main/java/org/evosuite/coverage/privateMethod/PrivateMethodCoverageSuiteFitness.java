@@ -310,12 +310,12 @@ public class PrivateMethodCoverageSuiteFitness extends TestSuiteFitnessFunction 
         assert (suite.getCoverage(this) <= 1.0) && (suite.getCoverage(this) >= 0.0) : "Wrong coverage value "
                 + suite.getCoverage(this);
 
-        String path = "/home/afonso/IdeaProjects/gfg.txt";
+        /*String path = "/home/afonso/IdeaProjects/gfg.txt";
         try {
             new fileWriter(fitness+"", path);
         } catch (IOException e) {
             throw new RuntimeException(e);
-        }
+        }*/
         return fitness;
     }
 

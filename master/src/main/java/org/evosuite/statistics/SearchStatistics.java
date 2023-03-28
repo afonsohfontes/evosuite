@@ -19,10 +19,16 @@
  */
 package org.evosuite.statistics;
 
+import com.opencsv.CSVReader;
+import com.opencsv.exceptions.CsvValidationException;
+import org.evosuite.coverage.CoverageCriteriaAnalyzer;
 import org.evosuite.ClientProcess;
 import org.evosuite.Properties;
+import org.evosuite.coverage.FitnessFunctions;
+import org.evosuite.coverage.TestFitnessFactory;
 import org.evosuite.coverage.ambiguity.AmbiguityCoverageSuiteFitness;
 import org.evosuite.coverage.branch.BranchCoverageSuiteFitness;
+import org.evosuite.coverage.branch.BranchCoverageTestFitness;
 import org.evosuite.coverage.branch.OnlyBranchCoverageSuiteFitness;
 import org.evosuite.coverage.cbranch.CBranchSuiteFitness;
 import org.evosuite.coverage.exception.ExceptionCoverageSuiteFitness;
@@ -34,6 +40,7 @@ import org.evosuite.coverage.method.MethodNoExceptionCoverageSuiteFitness;
 import org.evosuite.coverage.method.MethodTraceCoverageSuiteFitness;
 import org.evosuite.coverage.mutation.OnlyMutationSuiteFitness;
 import org.evosuite.coverage.mutation.WeakMutationSuiteFitness;
+import org.evosuite.coverage.privateMethod.PrivateMethodCoverageSuiteFitness;
 import org.evosuite.coverage.rho.RhoCoverageSuiteFitness;
 import org.evosuite.ga.Chromosome;
 import org.evosuite.result.TestGenerationResult;
@@ -44,6 +51,8 @@ import org.evosuite.runtime.util.AtMostOnceLogger;
 import org.evosuite.statistics.backend.StatisticsBackend;
 import org.evosuite.statistics.backend.StatisticsBackendFactory;
 import org.evosuite.symbolic.dse.DSEStatistics;
+import org.evosuite.testcase.TestChromosome;
+import org.evosuite.testcase.TestFitnessFunction;
 import org.evosuite.testsuite.TestSuiteChromosome;
 import org.evosuite.utils.Listener;
 import org.evosuite.utils.LoggingUtils;
@@ -51,6 +60,8 @@ import org.evosuite.utils.Randomness;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.*;
+import java.math.BigInteger;
 import java.util.*;
 
 
@@ -109,6 +120,10 @@ public class SearchStatistics implements Listener<ClientStateInformation> {
     private final List<List<TestGenerationResult>> results = new ArrayList<>();
 
     private SearchStatistics() {
+
+        String[][] _values;
+        int _i = 0;
+
         backend = StatisticsBackendFactory.getStatisticsBackend(Properties.STATISTICS_BACKEND);
 
         initFactories();
@@ -153,6 +168,14 @@ public class SearchStatistics implements Listener<ClientStateInformation> {
 
         sequenceOutputVariableFactories.put(RuntimeVariable.FeaturesFound.name(),
                 DirectSequenceOutputVariableFactory.getInteger(RuntimeVariable.FeaturesFound));
+
+        /*
+        AFONSO INSERTED
+         */
+        sequenceOutputVariableFactories.put(RuntimeVariable.BranchBitstringTimeline.name(),
+                new BitstringBranchCoverageSequenceOutputVariableFactory());
+        sequenceOutputVariableFactories.put(RuntimeVariable.PrivateMethodFitnessTimeline.name(),
+                new PrvateMethodCoverageSequenceOutputVariableFactory());
 
         // sequenceOutputVariableFactories.put("Generation_History", new GenerationSequenceOutputVariableFactory());
         if (MasterServices.getInstance().getMasterNode() != null)
@@ -203,6 +226,25 @@ public class SearchStatistics implements Listener<ClientStateInformation> {
         for (SequenceOutputVariableFactory<?> v : sequenceOutputVariableFactories.values()) {
             v.update((TestSuiteChromosome) individual);
         }
+
+        /*
+        AFONSO'S NOTES
+        TODO: CREATE A WAY TO CHECK BRANCH BITSTRING AND BRANCHCOVERAGE AND SAVE IT TO A NEW FILE ?!?!?!
+
+        TestSuiteChromosome suite = bestIndividual;
+        BranchCoverageSuiteFitness fitness = new BranchCoverageSuiteFitness();
+        double value = fitness.getFitness(suite);
+        double value2 = fitness.getFitness(suite);
+
+
+        //  CoverageCriteriaAnalyzer.analyzeCriteria(testSuite, Properties.ANALYSIS_CRITERIA);
+        Properties.Criterion[] newCriterion = new Properties.Criterion[]{Properties.Criterion.BRANCH};
+        for (Properties.Criterion pc : newCriterion) {
+            CoverageCriteriaAnalyzer.analyzeCoverageAfonso(Individual, pc, false);
+        }
+
+        */
+
     }
 
     /**
@@ -598,6 +640,62 @@ public class SearchStatistics implements Listener<ClientStateInformation> {
         }
     }
 
+
+
+    private static class PrvateMethodCoverageSequenceOutputVariableFactory extends SequenceOutputVariableFactory<Double> {
+
+        public PrvateMethodCoverageSequenceOutputVariableFactory() {
+            super(RuntimeVariable.PrivateMethodFitnessTimeline);
+        }
+
+        @Override
+        public Double getValue(TestSuiteChromosome individual) {
+            return individual.getFitnessInstanceOf(PrivateMethodCoverageSuiteFitness.class);
+        }
+    }
+
+
+
+    private static class BitstringBranchCoverageSequenceOutputVariableFactory extends SequenceOutputVariableFactory<Double> {
+
+        public BitstringBranchCoverageSequenceOutputVariableFactory() {
+            super(RuntimeVariable.BranchBitstringTimeline);
+        }
+
+        @Override
+        public Double getValue(TestSuiteChromosome individual) {
+            TestSuiteChromosome testSuiteCopy = individual.clone();
+            TestFitnessFactory<? extends TestFitnessFunction> factory = FitnessFunctions.getFitnessFactory(Properties.Criterion.BRANCH);
+            List<? extends TestFitnessFunction> goals = factory.getCoverageGoals();
+            Collections.sort(goals);
+
+            int covered = 0;
+            int notCovered = 0;
+            StringBuffer buffer = new StringBuffer(goals.size());
+            for (TestFitnessFunction goal : goals) {
+                if (goal.isCoveredBy(testSuiteCopy)) {
+                    logger.debug("Goal {} is covered", goal);
+                    covered++;
+                    buffer.append("1");
+                } else {
+                    logger.debug("Goal {} is not covered", goal);
+                    notCovered++;
+                    buffer.append("0");
+                    if (Properties.PRINT_MISSED_GOALS)
+                        LoggingUtils.getEvoLogger().info(" - Missed goal {}", goal);
+                }
+            }
+            double covered_d = (double)covered;
+            double notCovered_d = (double)notCovered;
+            double branchFit = covered_d/(covered_d+notCovered_d);
+            double bitString = Double.longBitsToDouble(new BigInteger(String.valueOf(buffer), 2).longValue());
+            // buffer is the coverage bit string for branch at this step
+            //System.out.printf("Covered goals: %d // Total Goals: %d // Fitness: %d", covered, (covered+notCovered), branchFit);
+            return bitString;
+
+        }
+    }
+
     private static class BranchCoverageSequenceOutputVariableFactory extends SequenceOutputVariableFactory<Double> {
 
         public BranchCoverageSequenceOutputVariableFactory() {
@@ -606,7 +704,38 @@ public class SearchStatistics implements Listener<ClientStateInformation> {
 
         @Override
         public Double getValue(TestSuiteChromosome individual) {
-            return individual.getCoverageInstanceOf(BranchCoverageSuiteFitness.class);
+            double a = individual.getCoverageInstanceOf(BranchCoverageSuiteFitness.class);
+            if (a>0.0){
+                return a;
+            }
+            TestSuiteChromosome testSuiteCopy = individual.clone();
+            TestFitnessFactory<? extends TestFitnessFunction> factory = FitnessFunctions.getFitnessFactory(Properties.Criterion.BRANCH);
+            List<? extends TestFitnessFunction> goals = factory.getCoverageGoals();
+            Collections.sort(goals);
+
+            int covered = 0;
+            int notCovered = 0;
+            StringBuffer buffer = new StringBuffer(goals.size());
+            for (TestFitnessFunction goal : goals) {
+                if (goal.isCoveredBy(testSuiteCopy)) {
+                    logger.debug("Goal {} is covered", goal);
+                    covered++;
+                    buffer.append("1");
+                } else {
+                    logger.debug("Goal {} is not covered", goal);
+                    notCovered++;
+                    buffer.append("0");
+                    if (Properties.PRINT_MISSED_GOALS)
+                        LoggingUtils.getEvoLogger().info(" - Missed goal {}", goal);
+                }
+            }
+            double covered_d = (double)covered;
+            double notCovered_d = (double)notCovered;
+            double branchFit = covered_d/(covered_d+notCovered_d);
+           // buffer is the coverage bit string for branch at this step
+            //System.out.printf("Covered goals: %d // Total Goals: %d // Fitness: %d", covered, (covered+notCovered), branchFit);
+            return branchFit;
+
         }
     }
 
@@ -751,6 +880,7 @@ public class SearchStatistics implements Listener<ClientStateInformation> {
 
         @Override
         public Double getValue(TestSuiteChromosome individual) {
+            //double a = individual.getFitnessInstanceOf(AmbiguityCoverageSuiteFitness.class);
             return individual.getFitnessInstanceOf(AmbiguityCoverageSuiteFitness.class);
         }
     }

@@ -59,7 +59,7 @@ public class PrivateMethodCoverageFitnessFunctionSystemTest extends SystemTestBa
         Properties.TARGET_CLASS = targetClass;
         Properties.CRITERION[0] = Criterion.PRIVATEMETHOD;
         Properties.TEST_ARCHIVE = true;
-
+        //Properties.COVERAGE_MATRIX = true;
         Properties.MINIMIZE = true;
 
 
@@ -67,7 +67,7 @@ public class PrivateMethodCoverageFitnessFunctionSystemTest extends SystemTestBa
 
 
         //java -jar evosuite-master-1.2.1-SNAPSHOT.jar -class tutorial.Stack -projectCP target/classes
-        String[] command = new String[]{"-generateSuite", "-class", targetClass, "-criterion=PRIVATEMETHOD", "-Dalgorithm=MONOTONIC_GA", "-Doutput_variables=configuration_id,TARGET_CLASS,criterion,Size,Length,BranchCoverageTimeline"};// "-Dalgorithm=DYNAMOSA"};
+        String[] command = new String[]{"-generateSuite", "-class", targetClass, "-criterion=PRIVATEMETHOD", "-Dalgorithm=MONOTONIC_GA", "-Doutput_variables=configuration_id,TARGET_CLASS,criterion,Size,Length,BranchCoverageTimeline,CoverageTimeline" ,"-Dtimeline_interval=500"};// "-Dalgorithm=DYNAMOSA"};
         Object result = evosuite.parseCommandLine(command);
         GeneticAlgorithm<TestSuiteChromosome> ga = getGAFromResult(result);
        List<TestSuiteChromosome> bestSet = ga.getBestIndividuals();

@@ -177,6 +177,7 @@ public abstract class Chromosome<T extends Chromosome<T>>
         //TODO mainfitness?
         this.fitnessValues.clear();
         this.fitnessValues.putAll(fits);
+        LinkedHashMap<FitnessFunction<T>, Double> a = fitnessValues;
     }
 
     public void setPreviousFitnessValues(Map<FitnessFunction<T>, Double> lastFits) {
