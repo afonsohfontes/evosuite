@@ -214,7 +214,6 @@ public enum RuntimeVariable {
      */
     PrivateMethodFitnessTimeline,
     PrivateMethodCoverageBitString,
-    //BitstringPrivateMethodCoverageTimeline,
     BranchBitstringTimeline,
     PrivateMethodBitstringTimeline,
     ExceptionBitstringTimeline,
