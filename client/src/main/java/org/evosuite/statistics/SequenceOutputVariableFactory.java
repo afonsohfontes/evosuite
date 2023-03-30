@@ -21,7 +21,6 @@ package org.evosuite.statistics;
 
 import org.evosuite.Properties;
 import org.evosuite.TimeController;
-import org.evosuite.coverage.branch.BranchCoverageSuiteFitness;
 import org.evosuite.testsuite.TestSuiteChromosome;
 
 import java.util.ArrayList;
@@ -34,12 +33,13 @@ import java.util.List;
  * @param <T>
  * @author gordon
  */
-public abstract class SequenceOutputVariableFactory<T extends Number> {
+public abstract class SequenceOutputVariableFactory<T> {
 
     protected RuntimeVariable variable;
 
     protected List<Long> timeStamps = new ArrayList<>();
-    protected List<T> values = new ArrayList<>();
+    protected List<T> values = new ArrayList<T>();
+    //protected List<String> strings = new ArrayList<>();
 
     private long startTime = 0L;
 
@@ -52,9 +52,11 @@ public abstract class SequenceOutputVariableFactory<T extends Number> {
     }
 
     protected abstract T getValue(TestSuiteChromosome individual);
+    //protected abstract String getString(TestSuiteChromosome individual);
 
     public void update(TestSuiteChromosome individual) {
         timeStamps.add(System.currentTimeMillis() - startTime);
+        T a = getValue(individual);
         values.add(getValue(individual));
     }
 
@@ -112,7 +114,6 @@ public abstract class SequenceOutputVariableFactory<T extends Number> {
                 return values.get(i);
             }
 
-
             /*
              * If we do not want to interpolate, return last observed value
              */
@@ -120,23 +121,26 @@ public abstract class SequenceOutputVariableFactory<T extends Number> {
                 return values.get(i - 1);
             }
 
+
+
+
             /*
              * Now we interpolate the coverage, as usually we don't have the value for exact time we want
              */
             long timeDelta = timeStamps.get(i) - timeStamps.get(i - 1);
 
             if (timeDelta > 0) {
-                double covDelta = values.get(i).doubleValue() - values.get(i - 1).doubleValue();
-                double ratio = covDelta / timeDelta;
+                if (values.get(i) instanceof Number) {
+                    double covDelta = Double.parseDouble(values.get(i).toString()) - Double.parseDouble(values.get(i - 1).toString());
+                    double ratio = covDelta / timeDelta;
 
-                long diff = preferredTime - timeStamps.get(i - 1);
-                Double cov = values.get(i - 1).doubleValue() + (diff * ratio);
-                /*Double a=1-cov;
-                if (name.contains("BranchCoverageTimeline")){
-                    BranchCoverageSuiteFitness fitness = new BranchCoverageSuiteFitness();
-                    a = fitness.getFitness(suite);
-                }*/
-                return (T) cov; // TODO...type
+                    long diff = preferredTime - timeStamps.get(i - 1);
+                    Double cov = Double.parseDouble(values.get(i - 1).toString()) + (diff * ratio);
+                    return (T) cov; // TODO...type
+                }
+               else{
+                    return values.get(i);
+                }
             }
         }
 

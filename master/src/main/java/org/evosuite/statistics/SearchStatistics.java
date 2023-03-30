@@ -171,9 +171,17 @@ public class SearchStatistics implements Listener<ClientStateInformation> {
 
         /*
         AFONSO INSERTED
+        BitstringExceptionCoverageSequenceOutputVariableFactory
+        BitstringPrivateMethodCoverageSequenceOutputVariableFactory
          */
         sequenceOutputVariableFactories.put(RuntimeVariable.BranchBitstringTimeline.name(),
                 new BitstringBranchCoverageSequenceOutputVariableFactory());
+        sequenceOutputVariableFactories.put(RuntimeVariable.PrivateMethodBitstringTimeline.name(),
+                new BitstringPrivateMethodCoverageSequenceOutputVariableFactory());
+        sequenceOutputVariableFactories.put(RuntimeVariable.ExceptionBitstringTimeline.name(),
+                new BitstringExceptionCoverageSequenceOutputVariableFactory());
+
+
         sequenceOutputVariableFactories.put(RuntimeVariable.PrivateMethodFitnessTimeline.name(),
                 new PrvateMethodCoverageSequenceOutputVariableFactory());
 
@@ -226,24 +234,6 @@ public class SearchStatistics implements Listener<ClientStateInformation> {
         for (SequenceOutputVariableFactory<?> v : sequenceOutputVariableFactories.values()) {
             v.update((TestSuiteChromosome) individual);
         }
-
-        /*
-        AFONSO'S NOTES
-        TODO: CREATE A WAY TO CHECK BRANCH BITSTRING AND BRANCHCOVERAGE AND SAVE IT TO A NEW FILE ?!?!?!
-
-        TestSuiteChromosome suite = bestIndividual;
-        BranchCoverageSuiteFitness fitness = new BranchCoverageSuiteFitness();
-        double value = fitness.getFitness(suite);
-        double value2 = fitness.getFitness(suite);
-
-
-        //  CoverageCriteriaAnalyzer.analyzeCriteria(testSuite, Properties.ANALYSIS_CRITERIA);
-        Properties.Criterion[] newCriterion = new Properties.Criterion[]{Properties.Criterion.BRANCH};
-        for (Properties.Criterion pc : newCriterion) {
-            CoverageCriteriaAnalyzer.analyzeCoverageAfonso(Individual, pc, false);
-        }
-
-        */
 
     }
 
@@ -655,15 +645,108 @@ public class SearchStatistics implements Listener<ClientStateInformation> {
     }
 
 
+/*
 
-    private static class BitstringBranchCoverageSequenceOutputVariableFactory extends SequenceOutputVariableFactory<Double> {
+        BitstringPrivateMethodCoverageSequenceOutputVariableFactory
+ */
+private static class BitstringExceptionCoverageSequenceOutputVariableFactory extends
+        SequenceOutputVariableFactory<String> {
+
+    public BitstringExceptionCoverageSequenceOutputVariableFactory() {
+        super(RuntimeVariable.ExceptionBitstringTimeline);
+    }
+
+    @Override
+    public String getValue(TestSuiteChromosome individual) {
+        TestSuiteChromosome testSuiteCopy = individual.clone();
+        TestFitnessFactory<? extends TestFitnessFunction> factory = FitnessFunctions.getFitnessFactory(Properties.Criterion.EXCEPTION);
+        List<? extends TestFitnessFunction> goals = factory.getCoverageGoals();
+        Collections.sort(goals);
+
+        int covered = 0;
+        int notCovered = 0;
+        StringBuffer buffer = new StringBuffer(goals.size());
+        for (TestFitnessFunction goal : goals) {
+            if (goal.isCoveredBy(testSuiteCopy)) {
+                logger.debug("Goal {} is covered", goal);
+                covered++;
+                buffer.append("1");
+            } else {
+                logger.debug("Goal {} is not covered", goal);
+                notCovered++;
+                buffer.append("0");
+                if (Properties.PRINT_MISSED_GOALS)
+                    LoggingUtils.getEvoLogger().info(" - Missed goal {}", goal);
+            }
+        }
+        double covered_d = (double)covered;
+        double notCovered_d = (double)notCovered;
+        double branchFit = covered_d/(covered_d+notCovered_d);
+        //double bitString = Double.longBitsToDouble(new BigInteger(String.valueOf(buffer), 2).longValue());
+        // buffer is the coverage bit string for branch at this step
+        //System.out.printf("Covered goals: %d // Total Goals: %d // Fitness: %d", covered, (covered+notCovered), branchFit);
+        //1111110010000000000000000000000000000000000000110111111011001111000110111100000
+        //return Integer.parseInt(buffer.toString(),2);
+        return buffer.toString();
+    }
+}
+    private static class BitstringPrivateMethodCoverageSequenceOutputVariableFactory extends
+            SequenceOutputVariableFactory<String> {
+
+        public BitstringPrivateMethodCoverageSequenceOutputVariableFactory() {
+            super(RuntimeVariable.PrivateMethodBitstringTimeline);
+        }
+
+        @Override
+        public String getValue(TestSuiteChromosome individual) {
+            TestSuiteChromosome testSuiteCopy = individual.clone();
+            TestFitnessFactory<? extends TestFitnessFunction> factory = FitnessFunctions.getFitnessFactory(Properties.Criterion.PRIVATEMETHOD);
+            List<? extends TestFitnessFunction> goals = factory.getCoverageGoals();
+            Collections.sort(goals);
+
+            int covered = 0;
+            int notCovered = 0;
+            StringBuffer buffer = new StringBuffer(goals.size());
+            for (TestFitnessFunction goal : goals) {
+                if (goal.isCoveredBy(testSuiteCopy)) {
+                    logger.debug("Goal {} is covered", goal);
+                    covered++;
+                    buffer.append("1");
+                } else {
+                    logger.debug("Goal {} is not covered", goal);
+                    notCovered++;
+                    buffer.append("0");
+                    if (Properties.PRINT_MISSED_GOALS)
+                        LoggingUtils.getEvoLogger().info(" - Missed goal {}", goal);
+                }
+            }
+            double covered_d = (double)covered;
+            double notCovered_d = (double)notCovered;
+            double branchFit = covered_d/(covered_d+notCovered_d);
+            //double bitString = Double.longBitsToDouble(new BigInteger(String.valueOf(buffer), 2).longValue());
+            // buffer is the coverage bit string for branch at this step
+            //System.out.printf("Covered goals: %d // Total Goals: %d // Fitness: %d", covered, (covered+notCovered), branchFit);
+            return buffer.toString();
+        }
+    }
+
+
+
+
+
+
+
+
+
+    private static class BitstringBranchCoverageSequenceOutputVariableFactory extends
+            SequenceOutputVariableFactory<String> {
 
         public BitstringBranchCoverageSequenceOutputVariableFactory() {
             super(RuntimeVariable.BranchBitstringTimeline);
         }
 
         @Override
-        public Double getValue(TestSuiteChromosome individual) {
+        public String getValue(TestSuiteChromosome individual) {
             TestSuiteChromosome testSuiteCopy = individual.clone();
             TestFitnessFactory<? extends TestFitnessFunction> factory = FitnessFunctions.getFitnessFactory(Properties.Criterion.BRANCH);
             List<? extends TestFitnessFunction> goals = factory.getCoverageGoals();
@@ -688,11 +771,10 @@ public class SearchStatistics implements Listener<ClientStateInformation> {
             double covered_d = (double)covered;
             double notCovered_d = (double)notCovered;
             double branchFit = covered_d/(covered_d+notCovered_d);
-            double bitString = Double.longBitsToDouble(new BigInteger(String.valueOf(buffer), 2).longValue());
+            //double bitString = Double.longBitsToDouble(new BigInteger(String.valueOf(buffer), 2).longValue());
             // buffer is the coverage bit string for branch at this step
             //System.out.printf("Covered goals: %d // Total Goals: %d // Fitness: %d", covered, (covered+notCovered), branchFit);
-            return bitString;
-
+            return buffer.toString();
         }
     }
 

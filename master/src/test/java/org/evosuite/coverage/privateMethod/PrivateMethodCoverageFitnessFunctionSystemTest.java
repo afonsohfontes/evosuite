@@ -14,6 +14,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.math.BigInteger;
 import java.util.List;
 
 public class PrivateMethodCoverageFitnessFunctionSystemTest extends SystemTestBase {
@@ -61,8 +62,17 @@ public class PrivateMethodCoverageFitnessFunctionSystemTest extends SystemTestBa
         Properties.TEST_ARCHIVE = true;
         //Properties.COVERAGE_MATRIX = true;
         Properties.MINIMIZE = true;
+        String s = "1111110010000000000000000000000000000000000000110111111011001111000110111100000";
+       // String s = "1111110010000000000000000000000000000";
+        StringBuffer a = new StringBuffer(s.length());
 
-
+        for (int i = 0; i < s.length(); i++) {
+            a.append("1");
+        }
+        String c = a.toString();
+        BigInteger b =  new BigInteger(c,2);
+        double e = b.doubleValue();
+        double f = 0;
         //java -cp evosuite-master-1.2.1-SNAPSHOT.jar org.evosuite.EvoSuite -generateSuite -class tutorial.Stack -projectCP target/classes -Dalgorithm=MONOTONIC_GA -Doutput_variables=configuration_id,TARGET_CLASS,criterion,Total_Branches,Covered_Branches,Total_Methods,Covered_Methods,BranchCoverageTimeline,CoverageBitString,BranchCoverageBitString,ExceptionCoverageTimeline,ExceptionCoverage -criterion=BRANCH:EXCEPTION:PRIVATEMETHOD
 
 
