@@ -202,16 +202,36 @@ public class CoverageCriteriaAnalyzer {
          */
         boolean recalculate = false;
         boolean branch = false;
+        boolean privatem = false;
+        boolean exceptionC = false;
 
         for (Properties.Criterion pc : criteria) {
             LoggingUtils.getEvoLogger().info("* Coverage analysis for criterion " + pc);
             if (pc.name() == "BRANCH"){
                 branch = true;
             }
+            if (pc.name() == "PRIVATEMETHOD"){
+                privatem = true;
+            }
+            if (pc.name() == "EXCEPTION"){
+                exceptionC = true;
+            }
             analyzeCoverage(testSuite, pc, recalculate);
+        }
+        if (!exceptionC){
+            Properties.Criterion[] newCriterion = new Criterion[]{Properties.Criterion.EXCEPTION};
+            for (Properties.Criterion pc : newCriterion) {
+                analyzeCoverage(testSuite, pc, recalculate);
+            }
         }
         if (!branch){
             Properties.Criterion[] newCriterion = new Criterion[]{Properties.Criterion.BRANCH};
+            for (Properties.Criterion pc : newCriterion) {
+                analyzeCoverage(testSuite, pc, recalculate);
+            }
+        }
+        if (!privatem){
+            Properties.Criterion[] newCriterion = new Criterion[]{Properties.Criterion.PRIVATEMETHOD};
             for (Properties.Criterion pc : newCriterion) {
                 analyzeCoverage(testSuite, pc, recalculate);
             }

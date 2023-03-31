@@ -211,8 +211,12 @@ public enum RuntimeVariable {
 
     /**
      * Afonso inserted:
+     *
+     *
+     * Total_Pmethods,Covered_Pmethods
+     *
      */
-    PrivateMethodFitnessTimeline,
+    PrivateMethodCoverageTimeline,
     PrivateMethodCoverageBitString,
     BranchBitstringTimeline,
     PrivateMethodBitstringTimeline,

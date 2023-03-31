@@ -19,6 +19,7 @@
  */
 package org.evosuite.coverage.privateMethod;
 
+import org.evosuite.Properties.Criterion;
 import org.evosuite.Properties;
 import org.evosuite.ga.archive.Archive;
 import org.evosuite.testcase.TestChromosome;
@@ -29,6 +30,7 @@ import org.evosuite.testcase.statements.ConstructorStatement;
 import org.evosuite.testcase.statements.EntityWithParametersStatement;
 import org.evosuite.testcase.statements.MethodStatement;
 import org.evosuite.testcase.statements.Statement;
+import org.evosuite.utils.LoggingUtils;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -146,7 +148,12 @@ public class PrivateMethodCoverageTestFitness extends TestFitnessFunction {
             individual.getTestCase().addCoveredGoal(this);
         }
         if (Properties.TEST_ARCHIVE) {
-            Archive.getArchiveInstance().updateArchive(this, individual, fitness);
+            Properties.Criterion[] criteria = Properties.CRITERION;
+            for (Properties.Criterion pc : criteria) {
+                if (pc.name() == "PRIVATEMETHOD") {
+                    Archive.getArchiveInstance().updateArchive(this, individual, fitness);
+                }
+            }
         }
         return fitness;
     }

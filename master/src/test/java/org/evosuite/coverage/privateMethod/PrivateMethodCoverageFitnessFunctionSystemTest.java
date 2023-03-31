@@ -63,9 +63,10 @@ public class PrivateMethodCoverageFitnessFunctionSystemTest extends SystemTestBa
         //Properties.COVERAGE_MATRIX = true;
         Properties.MINIMIZE = true;
 
+        //"Coverage,Total_Goals,Covered_Goals,CoverageTimeline,BranchCoverage,Total_Branches,Covered_Branches,BranchCoverageBitString,BranchCoverageTimeline,BranchBitstringTimeline,PrivateMethodCoverage,PrivateMethodCoverageBitString,PrivateMethodBitstringTimeline,PrivateMethodCoverageTimeline,ExceptionCoverage,ExceptionCoverageBitString,ExceptionCoverageTimeline";
+        //java -jar evosuite-master-1.2.1-SNAPSHOT.jar -class tutorial.Stack -generateSuite -projectCP target/classes -criterion=METHOD -Dalgorithm=MONOTONIC_GA -Doutput_variables=Coverage,Total_Goals,Covered_Goals,CoverageTimeline,BranchCoverage,Total_Branches,Covered_Branches,BranchCoverageBitString,BranchCoverageTimeline,BranchBitstringTimeline,PrivateMethodCoverage,PrivateMethodCoverageBitString,PrivateMethodBitstringTimeline,PrivateMethodCoverageTimeline,ExceptionCoverage,ExceptionCoverageBitString,ExceptionCoverageTimeline -Dtimeline_interval=500
 
-        //java -jar evosuite-master-1.2.1-SNAPSHOT.jar -class tutorial.Stack -projectCP target/classes
-        String[] command = new String[]{"-generateSuite", "-class", targetClass, "-criterion=PRIVATEMETHOD", "-Dalgorithm=MONOTONIC_GA", "-Doutput_variables=configuration_id,TARGET_CLASS,criterion,Size,Length,BranchCoverageTimeline,CoverageTimeline" ,"-Dtimeline_interval=500"};// "-Dalgorithm=DYNAMOSA"};
+        String[] command = new String[]{"-generateSuite", "-class", targetClass, "-criterion=METHOD", "-Dalgorithm=MONOTONIC_GA", "-Doutput_variables=Coverage,Total_Goals,Covered_Goals,CoverageTimeline,BranchCoverage,Total_Branches,Covered_Branches,BranchCoverageBitString,BranchCoverageTimeline,BranchBitstringTimeline,PrivateMethodCoverage,PrivateMethodCoverageBitString,PrivateMethodBitstringTimeline,PrivateMethodCoverageTimeline,ExceptionCoverage,ExceptionCoverageBitString,ExceptionCoverageTimeline" ,"-Dtimeline_interval=500"};// "-Dalgorithm=DYNAMOSA"};
         Object result = evosuite.parseCommandLine(command);
         GeneticAlgorithm<TestSuiteChromosome> ga = getGAFromResult(result);
        List<TestSuiteChromosome> bestSet = ga.getBestIndividuals();

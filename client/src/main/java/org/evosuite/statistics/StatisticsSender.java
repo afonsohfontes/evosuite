@@ -128,6 +128,7 @@ public class StatisticsSender {
 
     private static void sendCoveredInfo(TestSuiteChromosome testSuite) {
 
+        //Set<String> coveredPrivateMethods = new HashSet<>();
         Set<String> coveredMethods = new HashSet<>();
         Set<Integer> coveredTrueBranches = new HashSet<>();
         Set<Integer> coveredFalseBranches = new HashSet<>();
@@ -137,6 +138,7 @@ public class StatisticsSender {
         for (TestChromosome test : testSuite.getTestChromosomes()) {
             ExecutionTrace trace = test.getLastExecutionResult().getTrace();
             coveredMethods.addAll(trace.getCoveredMethods());
+            //coveredPrivateMethods.addAll(trace.getCoveredPrivateMethods());
             coveredTrueBranches.addAll(trace.getCoveredTrueBranches());
             coveredFalseBranches.addAll(trace.getCoveredFalseBranches());
             coveredBranchlessMethods.addAll(trace.getCoveredBranchlessMethods());

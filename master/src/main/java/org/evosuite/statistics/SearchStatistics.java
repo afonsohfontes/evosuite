@@ -182,7 +182,7 @@ public class SearchStatistics implements Listener<ClientStateInformation> {
                 new BitstringExceptionCoverageSequenceOutputVariableFactory());
 
 
-        sequenceOutputVariableFactories.put(RuntimeVariable.PrivateMethodFitnessTimeline.name(),
+        sequenceOutputVariableFactories.put(RuntimeVariable.PrivateMethodCoverageTimeline.name(),
                 new PrvateMethodCoverageSequenceOutputVariableFactory());
 
         // sequenceOutputVariableFactories.put("Generation_History", new GenerationSequenceOutputVariableFactory());
@@ -635,7 +635,7 @@ public class SearchStatistics implements Listener<ClientStateInformation> {
     private static class PrvateMethodCoverageSequenceOutputVariableFactory extends SequenceOutputVariableFactory<Double> {
 
         public PrvateMethodCoverageSequenceOutputVariableFactory() {
-            super(RuntimeVariable.PrivateMethodFitnessTimeline);
+            super(RuntimeVariable.PrivateMethodCoverageTimeline);
         }
 
         @Override
@@ -646,6 +646,7 @@ public class SearchStatistics implements Listener<ClientStateInformation> {
                     }
                     TestSuiteChromosome testSuiteCopy = individual.clone();
                     TestFitnessFactory<? extends TestFitnessFunction> factory = FitnessFunctions.getFitnessFactory(Properties.Criterion.PRIVATEMETHOD);
+                    //factory.
                     List<? extends TestFitnessFunction> goals = factory.getCoverageGoals();
                     Collections.sort(goals);
 
@@ -667,10 +668,11 @@ public class SearchStatistics implements Listener<ClientStateInformation> {
                     }
                     double covered_d = (double)covered;
                     double notCovered_d = (double)notCovered;
-                    double fit = covered_d/(covered_d+notCovered_d);
+                    double cov = covered_d/(covered_d+notCovered_d);
+                    //double fit2 = factory
                     // buffer is the coverage bit string for branch at this step
                     //System.out.printf("Covered goals: %d // Total Goals: %d // Fitness: %d", covered, (covered+notCovered), branchFit);
-                    return fit;
+                    return cov;
         }
     }
 

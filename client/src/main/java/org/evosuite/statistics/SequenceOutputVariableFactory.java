@@ -56,7 +56,6 @@ public abstract class SequenceOutputVariableFactory<T> {
 
     public void update(TestSuiteChromosome individual) {
         timeStamps.add(System.currentTimeMillis() - startTime);
-        T a = getValue(individual);
         values.add(getValue(individual));
     }
 
