@@ -213,8 +213,6 @@ public enum RuntimeVariable {
      * Afonso inserted
      *
      */
-    ExecutionRawTimeTimeline,
-    ExecutionRawTimeFinal, //ExecutionRawTimeFinal
     ExecutionTimeCoverage,
     ExecutionTimeTimeline,
     PrivateMethodCoverageTimeline,

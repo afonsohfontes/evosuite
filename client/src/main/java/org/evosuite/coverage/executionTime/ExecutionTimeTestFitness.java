@@ -35,7 +35,7 @@ public abstract class ExecutionTimeTestFitness extends TestFitnessFunction {
     @Override
     public double getFitness(TestChromosome individual, ExecutionResult result){
 
-      /*  long timeAverage = 0;
+        long timeAverage = 0;
         int validExecutions = 0;
 
         if (result.hasTimeout()) {
@@ -58,8 +58,7 @@ public abstract class ExecutionTimeTestFitness extends TestFitnessFunction {
             fitness = 1- (float)SuiteExecutionTime/(float)biggestExecutionTime;
         }
         updateIndividual(individual, fitness);
-        */
-        return result.getExecutionTime();
+        return fitness;
     }
 
     //@Override

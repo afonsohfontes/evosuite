@@ -37,23 +37,20 @@ public class ExecutionTimeSuiteFitness extends TestSuiteFitnessFunction {
 
         long SuiteExecutionTime = 0;
         for (ExecutionResult result : results) {
-
             if (result.hasTimeout()) {
                 continue;
             }
-            else {
-                SuiteExecutionTime += result.getExecutionTime();
-            }
+            SuiteExecutionTime += result.getExecutionTime();
         }
         if (SuiteExecutionTime>biggestExecutionTime){
             biggestExecutionTime = SuiteExecutionTime;
         }
         float fitness = 1;
         if (biggestExecutionTime!=0){
-            fitness = 1-SuiteExecutionTime/biggestExecutionTime;
+            fitness = 1- SuiteExecutionTime/biggestExecutionTime;
         }
         updateIndividual(suite, fitness);
-        return fitness; //TESTAR ESSA LINHA AQUI - CONTINUAR
+        return fitness;
     }
 
     //@Override
