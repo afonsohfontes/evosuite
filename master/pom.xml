@@ -78,6 +78,16 @@
     <!-- dependency versions are inherited from parent pom -->
     <dependencies>
 
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-math3</artifactId>
+            <version>3.6.1</version>
+        </dependency>
+        <!-- Thanks for using https://jar-download.com -->
+
+
+
         <!-- EvoSuite Modules -->
 
         <dependency>
@@ -160,6 +170,12 @@
             <groupId>javax.activation</groupId>
             <artifactId>javax.activation-api</artifactId>
             <version>1.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jetbrains</groupId>
+            <artifactId>annotations</artifactId>
+            <version>23.1.0</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 

@@ -24,6 +24,7 @@ import org.evosuite.Properties;
 import org.evosuite.Properties.Criterion;
 import org.evosuite.TestGenerationContext;
 import org.evosuite.coverage.ambiguity.AmbiguityCoverageSuiteFitness;
+import org.evosuite.coverage.executionTime.ExecutionTimeSuiteFitness;
 import org.evosuite.coverage.rho.RhoCoverageSuiteFitness;
 import org.evosuite.rmi.ClientServices;
 import org.evosuite.statistics.RuntimeVariable;
@@ -165,6 +166,8 @@ public class CoverageCriteriaAnalyzer {
                 return RuntimeVariable.WeakMutationScore;
             case ONLYBRANCH:
                 return RuntimeVariable.OnlyBranchCoverage;
+            case EXECUTIONTIME:
+                return RuntimeVariable.ExecutionTimeCoverage;
             case METHODTRACE:
                 return RuntimeVariable.MethodTraceCoverage;
             case METHOD:
@@ -204,6 +207,8 @@ public class CoverageCriteriaAnalyzer {
         boolean branch = false;
         boolean privatem = false;
         boolean exceptionC = false;
+        boolean executionTime = false;
+        boolean onlybranch = false;
 
         for (Properties.Criterion pc : criteria) {
             LoggingUtils.getEvoLogger().info("* Coverage analysis for criterion " + pc);
@@ -216,24 +221,43 @@ public class CoverageCriteriaAnalyzer {
             if (pc.name() == "EXCEPTION"){
                 exceptionC = true;
             }
-            analyzeCoverage(testSuite, pc, recalculate);
-        }
-        if (!exceptionC){
-            Properties.Criterion[] newCriterion = new Criterion[]{Properties.Criterion.EXCEPTION};
-            for (Properties.Criterion pc : newCriterion) {
-                analyzeCoverage(testSuite, pc, recalculate);
+            if (pc.name() == "EXECUTIONTIME"){
+                executionTime = true;
             }
+            if (pc.name() == "ONLYBRANCH"){
+                onlybranch = true;
+            }
+            analyzeCoverage(testSuite, pc, recalculate);
         }
         if (!branch){
             Properties.Criterion[] newCriterion = new Criterion[]{Properties.Criterion.BRANCH};
             for (Properties.Criterion pc : newCriterion) {
-                analyzeCoverage(testSuite, pc, recalculate);
+                analyzeCoverage(testSuite, pc, true);
+            }
+        }
+
+        if (!executionTime){
+            Properties.Criterion[] newCriterion = new Criterion[]{Properties.Criterion.EXECUTIONTIME};
+            for (Properties.Criterion pc : newCriterion) {
+                analyzeCoverage(testSuite, pc, true);
+            }
+        }
+        if (!exceptionC){
+            Properties.Criterion[] newCriterion = new Criterion[]{Properties.Criterion.EXCEPTION};
+            for (Properties.Criterion pc : newCriterion) {
+                analyzeCoverage(testSuite, pc, true);
             }
         }
         if (!privatem){
             Properties.Criterion[] newCriterion = new Criterion[]{Properties.Criterion.PRIVATEMETHOD};
             for (Properties.Criterion pc : newCriterion) {
-                analyzeCoverage(testSuite, pc, recalculate);
+                analyzeCoverage(testSuite, pc, true);
+            }
+        }
+        if (!onlybranch){
+            Properties.Criterion[] newCriterion = new Criterion[]{Properties.Criterion.ONLYBRANCH};
+            for (Properties.Criterion pc : newCriterion) {
+                analyzeCoverage(testSuite, pc, true);
             }
         }
 
@@ -253,6 +277,12 @@ public class CoverageCriteriaAnalyzer {
 
 
         private static void analyzeCoverage(TestSuiteChromosome testSuite, Properties.Criterion criterion, boolean recalculate) {
+
+            if (criterion == Properties.Criterion.EXECUTIONTIME){
+                double a = 1.0 - testSuite.getCoverageInstanceOf(ExecutionTimeSuiteFitness.class);
+                ClientServices.getInstance().getClientNode().trackOutputVariable(
+                        RuntimeVariable.ExecutionTimeCoverage, a);
+            }else{
 
         TestSuiteChromosome testSuiteCopy = testSuite.clone();
 
@@ -292,7 +322,7 @@ public class CoverageCriteriaAnalyzer {
                     LoggingUtils.getEvoLogger().info(" - Missed goal {}", goal);
             }
         }
-
+        //coverageBitString.put("", buffer);
         coverageBitString.put(criterion.name(), buffer);
         ClientServices.getInstance().getClientNode().trackOutputVariable(RuntimeVariable.CoverageBitString,
                 coverageBitString.size() == 0 ? "0" : coverageBitString.values().toString().replace("[", "").replace("]", "").replace(", ", ""));
@@ -341,6 +371,7 @@ public class CoverageCriteriaAnalyzer {
             ClientServices.getInstance().getClientNode().trackOutputVariable(
                     RuntimeVariable.AmbiguityScore, ag.getFitness(testSuite));
         }
+            }
     }
 
     public static RuntimeVariable getBitStringVariable(Properties.Criterion criterion) {

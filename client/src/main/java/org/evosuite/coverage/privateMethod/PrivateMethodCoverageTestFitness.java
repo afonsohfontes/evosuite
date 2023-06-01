@@ -30,6 +30,7 @@ import org.evosuite.testcase.statements.ConstructorStatement;
 import org.evosuite.testcase.statements.EntityWithParametersStatement;
 import org.evosuite.testcase.statements.MethodStatement;
 import org.evosuite.testcase.statements.Statement;
+import org.evosuite.utils.ArrayUtil;
 import org.evosuite.utils.LoggingUtils;
 
 import java.lang.reflect.Method;
@@ -142,17 +143,15 @@ public class PrivateMethodCoverageTestFitness extends TestFitnessFunction {
 
         double fitness = 1 - fitnessLocal;
 
-        if (fitness<=0.02) {fitness = 0.0;}  // anything lower than 0.02 means the method was called at least 6 times
+        if (fitness<=0.1) {fitness = 0.0;}  // anything lower than 0.02 means the method was called at least 3 times
         updateIndividual(individual, fitness);
         if (fitness == 0.0) {
             individual.getTestCase().addCoveredGoal(this);
         }
         if (Properties.TEST_ARCHIVE) {
-            Properties.Criterion[] criteria = Properties.CRITERION;
-            for (Properties.Criterion pc : criteria) {
-                if (pc.name() == "PRIVATEMETHOD") {
+
+            if (ArrayUtil.contains(Properties.CRITERION, Properties.Criterion.PRIVATEMETHOD)) {
                     Archive.getArchiveInstance().updateArchive(this, individual, fitness);
-                }
             }
         }
         return fitness;

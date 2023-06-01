@@ -28,17 +28,12 @@ import org.evosuite.testcase.statements.ConstructorStatement;
 import org.evosuite.testcase.statements.Statement;
 import org.evosuite.testsuite.TestSuiteChromosome;
 import org.evosuite.testsuite.TestSuiteFitnessFunction;
+import org.evosuite.utils.ArrayUtil;
 import org.objectweb.asm.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.*;
-
-import org.evosuite.coverage.privateMethod.fileWriter;
-
-
-import static java.util.stream.Collectors.averagingDouble;
 
 /**
  * Fitness function for a whole test suite for all methods, including exceptional behaviour
@@ -131,7 +126,8 @@ public class PrivateMethodCoverageSuiteFitness extends TestSuiteFitnessFunction 
                 this.toRemoveMethods.add(name);
 
                 if (Properties.TEST_ARCHIVE) {
-                    Archive.getArchiveInstance().updateArchive(goal, test, 0.0);
+                    if (ArrayUtil.contains(Properties.CRITERION, Properties.Criterion.PRIVATEMETHOD))
+                        Archive.getArchiveInstance().updateArchive(goal, test, 0.0);
                 }
             }
         }

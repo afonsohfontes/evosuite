@@ -25,6 +25,7 @@ import org.evosuite.ga.archive.Archive;
 import org.evosuite.testcase.TestChromosome;
 import org.evosuite.testcase.TestFitnessFunction;
 import org.evosuite.testcase.execution.ExecutionResult;
+import org.evosuite.utils.ArrayUtil;
 
 import java.util.Objects;
 
@@ -131,7 +132,9 @@ public class OnlyBranchCoverageTestFitness extends TestFitnessFunction {
         }
 
         if (Properties.TEST_ARCHIVE) {
-            Archive.getArchiveInstance().updateArchive(this, individual, fitness);
+            if (ArrayUtil.contains(Properties.CRITERION, Properties.Criterion.ONLYBRANCH)) {
+                Archive.getArchiveInstance().updateArchive(this, individual, fitness);
+            }
         }
 
         return fitness;

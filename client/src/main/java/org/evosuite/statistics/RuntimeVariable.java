@@ -210,14 +210,14 @@ public enum RuntimeVariable {
     BranchCoverageBitString,
 
     /**
-     * Afonso inserted:
-     *
-     *
-     * Total_Pmethods,Covered_Pmethods
+     * Afonso inserted
      *
      */
+    ExecutionTimeCoverage,
+    ExecutionTimeTimeline,
     PrivateMethodCoverageTimeline,
     PrivateMethodCoverageBitString,
+    OnlyBranchBitstringTimeline,
     BranchBitstringTimeline,
     PrivateMethodBitstringTimeline,
     ExceptionBitstringTimeline,

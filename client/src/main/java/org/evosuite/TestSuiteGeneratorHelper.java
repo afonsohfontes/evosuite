@@ -78,6 +78,9 @@ public class TestSuiteGeneratorHelper {
             case ONLYBRANCH:
                 LoggingUtils.getEvoLogger().info("  - Only-Branch Coverage");
                 break;
+            case EXECUTIONTIME:
+                LoggingUtils.getEvoLogger().info("  - Execution Time Coverage");
+                break;
             case METHODTRACE:
                 LoggingUtils.getEvoLogger().info("  - Method Coverage");
                 break;

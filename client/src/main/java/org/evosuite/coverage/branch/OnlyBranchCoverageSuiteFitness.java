@@ -27,6 +27,7 @@ import org.evosuite.testcase.TestFitnessFunction;
 import org.evosuite.testcase.execution.ExecutionResult;
 import org.evosuite.testsuite.TestSuiteChromosome;
 import org.evosuite.testsuite.TestSuiteFitnessFunction;
+import org.evosuite.utils.ArrayUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -102,7 +103,8 @@ public class OnlyBranchCoverageSuiteFitness extends TestSuiteFitnessFunction {
         List<OnlyBranchCoverageTestFitness> goals = new OnlyBranchCoverageFactory().getCoverageGoals();
         for (OnlyBranchCoverageTestFitness goal : goals) {
             if (Properties.TEST_ARCHIVE)
-                Archive.getArchiveInstance().addTarget(goal);
+                if (ArrayUtil.contains(Properties.CRITERION, Properties.Criterion.ONLYBRANCH))
+                    Archive.getArchiveInstance().addTarget(goal);
 
             branchesId.add(goal.getBranch().getActualBranchId());
             if (goal.getBranchExpressionValue())
@@ -166,7 +168,8 @@ public class OnlyBranchCoverageSuiteFitness extends TestSuiteFitnessFunction {
                     toRemoveBranchesT.add(entry.getKey());
                 }
                 if (Properties.TEST_ARCHIVE) {
-                    Archive.getArchiveInstance().updateArchive(goal, test, entry.getValue());
+                    if (ArrayUtil.contains(Properties.CRITERION, Properties.Criterion.ONLYBRANCH))
+                        Archive.getArchiveInstance().updateArchive(goal, test, entry.getValue());
                 }
             }
             for (Entry<Integer, Double> entry : result.getTrace().getFalseDistances().entrySet()) {
@@ -184,7 +187,8 @@ public class OnlyBranchCoverageSuiteFitness extends TestSuiteFitnessFunction {
                     toRemoveBranchesF.add(entry.getKey());
                 }
                 if (Properties.TEST_ARCHIVE) {
-                    Archive.getArchiveInstance().updateArchive(goal, test, entry.getValue());
+                    if (ArrayUtil.contains(Properties.CRITERION, Properties.Criterion.ONLYBRANCH))
+                        Archive.getArchiveInstance().updateArchive(goal, test, entry.getValue());
                 }
             }
         }

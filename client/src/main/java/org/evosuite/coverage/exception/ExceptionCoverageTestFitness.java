@@ -24,6 +24,7 @@ import org.evosuite.ga.archive.Archive;
 import org.evosuite.testcase.TestChromosome;
 import org.evosuite.testcase.TestFitnessFunction;
 import org.evosuite.testcase.execution.ExecutionResult;
+import org.evosuite.utils.ArrayUtil;
 import org.evosuite.utils.generic.GenericClass;
 import org.evosuite.utils.generic.GenericClassFactory;
 
@@ -151,10 +152,14 @@ public class ExceptionCoverageTestFitness extends TestFitnessFunction {
             individual.getTestCase().addCoveredGoal(this);
         }
 
+
         if (Properties.TEST_ARCHIVE) {
-            Archive.getArchiveInstance().addTarget(this);
-            Archive.getArchiveInstance().updateArchive(this, individual, fitness);
+            if (ArrayUtil.contains(Properties.CRITERION, Properties.Criterion.EXCEPTION)) {
+                Archive.getArchiveInstance().addTarget(this);
+                Archive.getArchiveInstance().updateArchive(this, individual, fitness);
+            }
         }
+
 
         return fitness;
     }

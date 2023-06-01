@@ -14,6 +14,9 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.lang.management.ManagementFactory;
+import java.lang.management.MemoryPoolMXBean;
+import java.lang.management.MemoryUsage;
 import java.math.BigInteger;
 import java.util.List;
 
@@ -53,20 +56,19 @@ public class PrivateMethodCoverageFitnessFunctionSystemTest extends SystemTestBa
 
     @Test
     public void systemTestPrivateMethodCoverageInnerClasses() {
-        //Properties.CRITERION = new Properties.Criterion[]{Properties.Criterion.PRIVATEMETHOD};
-      //  Properties.CLIENT_ON_THREAD = true;
         EvoSuite evosuite = new EvoSuite();
         String targetClass = PrivateMixAfonsoTest.class.getCanonicalName();
         Properties.TARGET_CLASS = targetClass;
         Properties.CRITERION[0] = Criterion.PRIVATEMETHOD;
         Properties.TEST_ARCHIVE = true;
-        //Properties.COVERAGE_MATRIX = true;
         Properties.MINIMIZE = true;
 
-        //"Coverage,Total_Goals,Covered_Goals,CoverageTimeline,BranchCoverage,Total_Branches,Covered_Branches,BranchCoverageBitString,BranchCoverageTimeline,BranchBitstringTimeline,PrivateMethodCoverage,PrivateMethodCoverageBitString,PrivateMethodBitstringTimeline,PrivateMethodCoverageTimeline,ExceptionCoverage,ExceptionCoverageBitString,ExceptionCoverageTimeline";
-        //java -jar evosuite-master-1.2.1-SNAPSHOT.jar -class tutorial.Stack -generateSuite -projectCP target/classes -criterion=METHOD -Dalgorithm=MONOTONIC_GA -Doutput_variables=Coverage,Total_Goals,Covered_Goals,CoverageTimeline,BranchCoverage,Total_Branches,Covered_Branches,BranchCoverageBitString,BranchCoverageTimeline,BranchBitstringTimeline,PrivateMethodCoverage,PrivateMethodCoverageBitString,PrivateMethodBitstringTimeline,PrivateMethodCoverageTimeline,ExceptionCoverage,ExceptionCoverageBitString,ExceptionCoverageTimeline -Dtimeline_interval=500
+        String[] command = new String[]{"-generateSuite", "-class", targetClass, "-criterion=BRANCH:EXCEPTION", "-Dalgorithm=MONOTONIC_GA",
+                "-Doutput_variables=ExecutionTimeCoverage,ExecutionTimeTimeline,BranchCoverageBitString," +
+                        "BranchBitstringTimeline,OnlyBranchCoverageBitString,OnlyBranchBitstringTimeline," +
+                        "PrivateMethodCoverageTimeline,PrivateMethodCoverageBitString,PrivateMethodBitstringTimeline," +
+                        "ExceptionCoverageBitString,ExceptionBitstringTimeline,ExceptionCoverageTimeline" ,"-Dtimeline_interval=500"};
 
-        String[] command = new String[]{"-generateSuite", "-class", targetClass, "-criterion=METHOD", "-Dalgorithm=MONOTONIC_GA", "-Doutput_variables=Coverage,Total_Goals,Covered_Goals,CoverageTimeline,BranchCoverage,Total_Branches,Covered_Branches,BranchCoverageBitString,BranchCoverageTimeline,BranchBitstringTimeline,PrivateMethodCoverage,PrivateMethodCoverageBitString,PrivateMethodBitstringTimeline,PrivateMethodCoverageTimeline,ExceptionCoverage,ExceptionCoverageBitString,ExceptionCoverageTimeline" ,"-Dtimeline_interval=500"};// "-Dalgorithm=DYNAMOSA"};
         Object result = evosuite.parseCommandLine(command);
         GeneticAlgorithm<TestSuiteChromosome> ga = getGAFromResult(result);
        List<TestSuiteChromosome> bestSet = ga.getBestIndividuals();

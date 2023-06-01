@@ -125,6 +125,8 @@ public final class ArchiveUtils {
                     break;
                 case READABILITY:
                     break;
+                case EXECUTIONTIME:
+                    break;
                 case ONLYBRANCH:
                     if (goal instanceof OnlyBranchCoverageTestFitness) {
                         return true;

@@ -30,6 +30,7 @@ import org.evosuite.testcase.statements.ConstructorStatement;
 import org.evosuite.testcase.statements.Statement;
 import org.evosuite.testsuite.TestSuiteChromosome;
 import org.evosuite.testsuite.TestSuiteFitnessFunction;
+import org.evosuite.utils.ArrayUtil;
 import org.objectweb.asm.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -178,7 +179,8 @@ public class BranchCoverageSuiteFitness extends TestSuiteFitnessFunction {
                     test.getTestCase().addCoveredGoal(goal);
                     toRemoveRootBranches.add(name);
                     if (Properties.TEST_ARCHIVE) {
-                        Archive.getArchiveInstance().updateArchive(goal, test, 0.0);
+                        if (ArrayUtil.contains(Properties.CRITERION, Properties.Criterion.BRANCH))
+                            Archive.getArchiveInstance().updateArchive(goal, test, 0.0);
                     }
                 }
 
@@ -204,7 +206,8 @@ public class BranchCoverageSuiteFitness extends TestSuiteFitnessFunction {
                 test.getTestCase().addCoveredGoal(goal);
                 toRemoveRootBranches.add(entry.getKey());
                 if (Properties.TEST_ARCHIVE) {
-                    Archive.getArchiveInstance().updateArchive(goal, test, 0.0);
+                    if (ArrayUtil.contains(Properties.CRITERION, Properties.Criterion.BRANCH))
+                        Archive.getArchiveInstance().updateArchive(goal, test, 0.0);
                 }
             }
         }
@@ -244,7 +247,8 @@ public class BranchCoverageSuiteFitness extends TestSuiteFitnessFunction {
                 toRemoveBranchesT.add(entry.getKey());
             }
             if (Properties.TEST_ARCHIVE) {
-                Archive.getArchiveInstance().updateArchive(goal, test, entry.getValue());
+                if (ArrayUtil.contains(Properties.CRITERION, Properties.Criterion.BRANCH))
+                    Archive.getArchiveInstance().updateArchive(goal, test, entry.getValue());
             }
         }
 
@@ -268,7 +272,8 @@ public class BranchCoverageSuiteFitness extends TestSuiteFitnessFunction {
                 toRemoveBranchesF.add(entry.getKey());
             }
             if (Properties.TEST_ARCHIVE) {
-                Archive.getArchiveInstance().updateArchive(goal, test, entry.getValue());
+                if (ArrayUtil.contains(Properties.CRITERION, Properties.Criterion.BRANCH))
+                    Archive.getArchiveInstance().updateArchive(goal, test, entry.getValue());
             }
         }
 

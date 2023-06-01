@@ -21,6 +21,7 @@ package org.evosuite.statistics;
 
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
+import org.evosuite.TestGenerationContext;
 import org.evosuite.coverage.CoverageCriteriaAnalyzer;
 import org.evosuite.ClientProcess;
 import org.evosuite.Properties;
@@ -32,6 +33,7 @@ import org.evosuite.coverage.branch.BranchCoverageTestFitness;
 import org.evosuite.coverage.branch.OnlyBranchCoverageSuiteFitness;
 import org.evosuite.coverage.cbranch.CBranchSuiteFitness;
 import org.evosuite.coverage.exception.ExceptionCoverageSuiteFitness;
+import org.evosuite.coverage.executionTime.ExecutionTimeSuiteFitness;
 import org.evosuite.coverage.io.input.InputCoverageSuiteFitness;
 import org.evosuite.coverage.io.output.OutputCoverageSuiteFitness;
 import org.evosuite.coverage.line.LineCoverageSuiteFitness;
@@ -53,7 +55,9 @@ import org.evosuite.statistics.backend.StatisticsBackendFactory;
 import org.evosuite.symbolic.dse.DSEStatistics;
 import org.evosuite.testcase.TestChromosome;
 import org.evosuite.testcase.TestFitnessFunction;
+import org.evosuite.testcase.execution.ExecutionResult;
 import org.evosuite.testsuite.TestSuiteChromosome;
+import org.evosuite.utils.ArrayUtil;
 import org.evosuite.utils.Listener;
 import org.evosuite.utils.LoggingUtils;
 import org.evosuite.utils.Randomness;
@@ -176,12 +180,16 @@ public class SearchStatistics implements Listener<ClientStateInformation> {
          */
         sequenceOutputVariableFactories.put(RuntimeVariable.BranchBitstringTimeline.name(),
                 new BitstringBranchCoverageSequenceOutputVariableFactory());
+        sequenceOutputVariableFactories.put(RuntimeVariable.OnlyBranchBitstringTimeline.name(),
+                new BitstringOnlyBranchCoverageSequenceOutputVariableFactory());
         sequenceOutputVariableFactories.put(RuntimeVariable.PrivateMethodBitstringTimeline.name(),
                 new BitstringPrivateMethodCoverageSequenceOutputVariableFactory());
         sequenceOutputVariableFactories.put(RuntimeVariable.ExceptionBitstringTimeline.name(),
                 new BitstringExceptionCoverageSequenceOutputVariableFactory());
 
 
+        sequenceOutputVariableFactories.put(RuntimeVariable.ExecutionTimeTimeline.name(),
+                new ExecutionTimeCoverageSequenceOutputVariableFactory());
         sequenceOutputVariableFactories.put(RuntimeVariable.PrivateMethodCoverageTimeline.name(),
                 new PrvateMethodCoverageSequenceOutputVariableFactory());
 
@@ -640,10 +648,10 @@ public class SearchStatistics implements Listener<ClientStateInformation> {
 
         @Override
         public Double getValue(TestSuiteChromosome individual) {
-                    double a = individual.getFitnessInstanceOf(PrivateMethodCoverageSuiteFitness.class);
-                    if (a>0.0){
-                        return a;
-                    }
+                    //double a = individual.getFitnessInstanceOf(PrivateMethodCoverageSuiteFitness.class);
+                    //if (a>0.0){
+                    //    return a;
+                    //}
                     TestSuiteChromosome testSuiteCopy = individual.clone();
                     TestFitnessFactory<? extends TestFitnessFunction> factory = FitnessFunctions.getFitnessFactory(Properties.Criterion.PRIVATEMETHOD);
                     //factory.
@@ -668,7 +676,11 @@ public class SearchStatistics implements Listener<ClientStateInformation> {
                     }
                     double covered_d = (double)covered;
                     double notCovered_d = (double)notCovered;
-                    double cov = covered_d/(covered_d+notCovered_d);
+                    double den = (covered_d+notCovered_d);
+                    double cov = 0;
+                    if (den>0){
+                        cov = covered_d/den;
+                    }
                     //double fit2 = factory
                     // buffer is the coverage bit string for branch at this step
                     //System.out.printf("Covered goals: %d // Total Goals: %d // Fitness: %d", covered, (covered+notCovered), branchFit);
@@ -690,36 +702,27 @@ private static class BitstringExceptionCoverageSequenceOutputVariableFactory ext
 
     @Override
     public String getValue(TestSuiteChromosome individual) {
-        TestSuiteChromosome testSuiteCopy = individual.clone();
-        TestFitnessFactory<? extends TestFitnessFunction> factory = FitnessFunctions.getFitnessFactory(Properties.Criterion.EXCEPTION);
-        List<? extends TestFitnessFunction> goals = factory.getCoverageGoals();
-        Collections.sort(goals);
+        if (ArrayUtil.contains(Properties.CRITERION, Properties.Criterion.EXCEPTION)) {
+            TestSuiteChromosome testSuiteCopy = individual.clone();
 
-        int covered = 0;
-        int notCovered = 0;
-        StringBuffer buffer = new StringBuffer(goals.size());
-        for (TestFitnessFunction goal : goals) {
-            if (goal.isCoveredBy(testSuiteCopy)) {
-                logger.debug("Goal {} is covered", goal);
-                covered++;
-                buffer.append("1");
-            } else {
-                logger.debug("Goal {} is not covered", goal);
-                notCovered++;
-                buffer.append("0");
-                if (Properties.PRINT_MISSED_GOALS)
-                    LoggingUtils.getEvoLogger().info(" - Missed goal {}", goal);
+            TestFitnessFactory<? extends TestFitnessFunction> factory = FitnessFunctions.getFitnessFactory(Properties.Criterion.EXCEPTION);
+
+
+            List<? extends TestFitnessFunction> goals = factory.getCoverageGoals();
+            Collections.sort(goals);
+
+            StringBuffer buffer = new StringBuffer(goals.size());
+            for (TestFitnessFunction goal : goals) {
+                if (goal.isCoveredBy(testSuiteCopy)) {
+                    buffer.append("1");
+                } else {
+                    buffer.append("0");
+                }
             }
+            return buffer.toString();
+        }else{
+            return "";
         }
-        double covered_d = (double)covered;
-        double notCovered_d = (double)notCovered;
-        double branchFit = covered_d/(covered_d+notCovered_d);
-        //double bitString = Double.longBitsToDouble(new BigInteger(String.valueOf(buffer), 2).longValue());
-        // buffer is the coverage bit string for branch at this step
-        //System.out.printf("Covered goals: %d // Total Goals: %d // Fitness: %d", covered, (covered+notCovered), branchFit);
-        //1111110010000000000000000000000000000000000000110111111011001111000110111100000
-        //return Integer.parseInt(buffer.toString(),2);
-        return buffer.toString();
     }
 }
     private static class BitstringPrivateMethodCoverageSequenceOutputVariableFactory extends
@@ -735,29 +738,35 @@ private static class BitstringExceptionCoverageSequenceOutputVariableFactory ext
             TestFitnessFactory<? extends TestFitnessFunction> factory = FitnessFunctions.getFitnessFactory(Properties.Criterion.PRIVATEMETHOD);
             List<? extends TestFitnessFunction> goals = factory.getCoverageGoals();
             Collections.sort(goals);
+            for (TestChromosome test : testSuiteCopy.getTestChromosomes()) {
+                test.getTestCase().clearCoveredGoals();
+                test.clearCachedResults();
+            }
+            //TestGenerationContext.getInstance().resetContext();
+            //Properties.getInitializedTargetClass();
+
+            Properties.Criterion[] oldCriterion = Arrays.copyOf(Properties.CRITERION, Properties.CRITERION.length);
+            Properties.CRITERION = new Properties.Criterion[]{Properties.Criterion.BRANCH};
 
             int covered = 0;
             int notCovered = 0;
             StringBuffer buffer = new StringBuffer(goals.size());
             for (TestFitnessFunction goal : goals) {
                 if (goal.isCoveredBy(testSuiteCopy)) {
-                    logger.debug("Goal {} is covered", goal);
                     covered++;
                     buffer.append("1");
                 } else {
-                    logger.debug("Goal {} is not covered", goal);
                     notCovered++;
                     buffer.append("0");
-                    if (Properties.PRINT_MISSED_GOALS)
-                        LoggingUtils.getEvoLogger().info(" - Missed goal {}", goal);
                 }
             }
             double covered_d = (double)covered;
             double notCovered_d = (double)notCovered;
-            double branchFit = covered_d/(covered_d+notCovered_d);
+            //double branchFit = covered_d/(covered_d+notCovered_d);
             //double bitString = Double.longBitsToDouble(new BigInteger(String.valueOf(buffer), 2).longValue());
             // buffer is the coverage bit string for branch at this step
             //System.out.printf("Covered goals: %d // Total Goals: %d // Fitness: %d", covered, (covered+notCovered), branchFit);
+            Properties.CRITERION = oldCriterion;
             return buffer.toString();
         }
     }
@@ -770,6 +779,55 @@ private static class BitstringExceptionCoverageSequenceOutputVariableFactory ext
 
 
 
+    private static class BitstringOnlyBranchCoverageSequenceOutputVariableFactory extends
+            SequenceOutputVariableFactory<String> {
+
+        public BitstringOnlyBranchCoverageSequenceOutputVariableFactory() {
+            super(RuntimeVariable.OnlyBranchBitstringTimeline);
+        }
+
+        @Override
+        public String getValue(TestSuiteChromosome individual) {
+
+            Properties.Criterion[] oldCriterion = Arrays.copyOf(Properties.CRITERION, Properties.CRITERION.length);
+            Properties.CRITERION = new Properties.Criterion[]{Properties.Criterion.ONLYBRANCH};
+
+            TestSuiteChromosome testSuiteCopy = individual.clone();
+            TestFitnessFactory<? extends TestFitnessFunction> factory = FitnessFunctions.getFitnessFactory(Properties.Criterion.ONLYBRANCH);
+            List<? extends TestFitnessFunction> goals = factory.getCoverageGoals();
+            Collections.sort(goals);
+            for (TestChromosome test : testSuiteCopy.getTestChromosomes()) {
+                test.getTestCase().clearCoveredGoals();
+                test.clearCachedResults();
+            }
+            //TestGenerationContext.getInstance().resetContext();
+            Properties.getInitializedTargetClass();
+
+
+            int covered = 0;
+            int notCovered = 0;
+            StringBuffer buffer = new StringBuffer(goals.size());
+            for (TestFitnessFunction goal : goals) {
+                if (goal.isCoveredBy(testSuiteCopy)) {
+                    covered++;
+                    buffer.append("1");
+                } else {
+                    notCovered++;
+                    buffer.append("0");
+                }
+            }
+            double covered_d = (double)covered;
+            double notCovered_d = (double)notCovered;
+            //double branchFit = covered_d/(covered_d+notCovered_d);
+            //double bitString = Double.longBitsToDouble(new BigInteger(String.valueOf(buffer), 2).longValue());
+            // buffer is the coverage bit string for branch at this step
+            //System.out.printf("Covered goals: %d // Total Goals: %d // Fitness: %d", covered, (covered+notCovered), branchFit);
+            Properties.CRITERION = oldCriterion;
+            return buffer.toString();
+        }
+    }
+
+
     private static class BitstringBranchCoverageSequenceOutputVariableFactory extends
             SequenceOutputVariableFactory<String> {
 
@@ -779,33 +837,42 @@ private static class BitstringExceptionCoverageSequenceOutputVariableFactory ext
 
         @Override
         public String getValue(TestSuiteChromosome individual) {
+
+            Properties.Criterion[] oldCriterion = Arrays.copyOf(Properties.CRITERION, Properties.CRITERION.length);
+            Properties.CRITERION = new Properties.Criterion[]{Properties.Criterion.BRANCH};
+
             TestSuiteChromosome testSuiteCopy = individual.clone();
             TestFitnessFactory<? extends TestFitnessFunction> factory = FitnessFunctions.getFitnessFactory(Properties.Criterion.BRANCH);
             List<? extends TestFitnessFunction> goals = factory.getCoverageGoals();
+
             Collections.sort(goals);
+            //for (TestChromosome test : testSuiteCopy.getTestChromosomes()) {
+            //    test.getTestCase().clearCoveredGoals();
+            //    test.clearCachedResults();
+            //}
+            //TestGenerationContext.getInstance().resetContext();
+            //Properties.getInitializedTargetClass();
+
 
             int covered = 0;
             int notCovered = 0;
             StringBuffer buffer = new StringBuffer(goals.size());
             for (TestFitnessFunction goal : goals) {
                 if (goal.isCoveredBy(testSuiteCopy)) {
-                    logger.debug("Goal {} is covered", goal);
                     covered++;
                     buffer.append("1");
                 } else {
-                    logger.debug("Goal {} is not covered", goal);
                     notCovered++;
                     buffer.append("0");
-                    if (Properties.PRINT_MISSED_GOALS)
-                        LoggingUtils.getEvoLogger().info(" - Missed goal {}", goal);
                 }
             }
             double covered_d = (double)covered;
             double notCovered_d = (double)notCovered;
-            double branchFit = covered_d/(covered_d+notCovered_d);
+            //double branchFit = covered_d/(covered_d+notCovered_d);
             //double bitString = Double.longBitsToDouble(new BigInteger(String.valueOf(buffer), 2).longValue());
             // buffer is the coverage bit string for branch at this step
             //System.out.printf("Covered goals: %d // Total Goals: %d // Fitness: %d", covered, (covered+notCovered), branchFit);
+            Properties.CRITERION = oldCriterion;
             return buffer.toString();
         }
     }
@@ -820,17 +887,28 @@ private static class BitstringExceptionCoverageSequenceOutputVariableFactory ext
 
         @Override
         public Double getValue(TestSuiteChromosome individual) {
-            double a = individual.getCoverageInstanceOf(ExceptionCoverageSuiteFitness.class);
-            if (a>0.0){
-                return a;
-            }
-            TestSuiteChromosome testSuiteCopy = individual.clone();
-            TestFitnessFactory<? extends TestFitnessFunction> factory = FitnessFunctions.getFitnessFactory(Properties.Criterion.EXCEPTION);
-            double fit = factory.getFitness(testSuiteCopy);
-            return fit;
+            double a = 0.0;
+            if (ArrayUtil.contains(Properties.CRITERION, Properties.Criterion.EXCEPTION))
+                a = individual.getCoverageInstanceOf(ExceptionCoverageSuiteFitness.class);
+            return a;
         }
     }
 
+    private static class ExecutionTimeCoverageSequenceOutputVariableFactory extends SequenceOutputVariableFactory<Double> {
+
+        public ExecutionTimeCoverageSequenceOutputVariableFactory() {
+            super(RuntimeVariable.ExecutionTimeTimeline);
+        }
+
+        @Override
+        public Double getValue(TestSuiteChromosome individual) {
+            double a = 0;
+            if (ArrayUtil.contains(Properties.CRITERION, Properties.Criterion.EXECUTIONTIME)){
+                a = 1.0 - individual.getCoverageInstanceOf(ExecutionTimeSuiteFitness.class);
+            }
+            return a;
+        }
+    }
 
     private static class BranchCoverageSequenceOutputVariableFactory extends SequenceOutputVariableFactory<Double> {
 
@@ -840,10 +918,10 @@ private static class BitstringExceptionCoverageSequenceOutputVariableFactory ext
 
         @Override
         public Double getValue(TestSuiteChromosome individual) {
-            double a = individual.getCoverageInstanceOf(BranchCoverageSuiteFitness.class);
-            if (a>0.0){
-                return a;
-            }
+            //double a = individual.getCoverageInstanceOf(BranchCoverageSuiteFitness.class);
+            //if (a>0.0){
+            //    return a;
+            //}
             TestSuiteChromosome testSuiteCopy = individual.clone();
             TestFitnessFactory<? extends TestFitnessFunction> factory = FitnessFunctions.getFitnessFactory(Properties.Criterion.BRANCH);
             List<? extends TestFitnessFunction> goals = factory.getCoverageGoals();
@@ -854,15 +932,11 @@ private static class BitstringExceptionCoverageSequenceOutputVariableFactory ext
             StringBuffer buffer = new StringBuffer(goals.size());
             for (TestFitnessFunction goal : goals) {
                 if (goal.isCoveredBy(testSuiteCopy)) {
-                    logger.debug("Goal {} is covered", goal);
                     covered++;
                     buffer.append("1");
                 } else {
-                    logger.debug("Goal {} is not covered", goal);
                     notCovered++;
                     buffer.append("0");
-                    if (Properties.PRINT_MISSED_GOALS)
-                        LoggingUtils.getEvoLogger().info(" - Missed goal {}", goal);
                 }
             }
             double covered_d = (double)covered;
@@ -1100,6 +1174,7 @@ private static class BitstringExceptionCoverageSequenceOutputVariableFactory ext
 
         @Override
         public Double getValue(TestSuiteChromosome individual) {
+
             return individual.getFitnessInstanceOf(ExceptionCoverageSuiteFitness.class);
         }
     }

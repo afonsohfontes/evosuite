@@ -92,6 +92,11 @@ public class TestCaseExecutor implements ThreadFactory {
     public static long timeExecuted = 0;
 
     /**
+     * Constant <code>memoryUsed=0</code>
+     */
+    public static long memoryUsed = 0;
+
+    /**
      * Constant <code>testsExecuted=0</code>
      */
     public static int testsExecuted = 0;
@@ -293,6 +298,8 @@ public class TestCaseExecutor implements ThreadFactory {
         Runtime.getInstance().resetRuntime();
 
         long startTime = System.currentTimeMillis();
+        java.lang.Runtime runtime = java.lang.Runtime.getRuntime();
+        runtime.gc();
 
         TimeoutHandler<ExecutionResult> handler = new TimeoutHandler<>();
 
@@ -340,9 +347,15 @@ public class TestCaseExecutor implements ThreadFactory {
              * we waited for all SUT threads to finish
              */
 
+            long freeMem_post = java.lang.Runtime.getRuntime().freeMemory();
+            long totalMem_post = java.lang.Runtime.getRuntime().totalMemory();
+
             long endTime = System.currentTimeMillis();
             timeExecuted += endTime - startTime;
             testsExecuted++;
+            runtime.gc();
+            memoryUsed = runtime.totalMemory() - runtime.freeMemory();
+
             return result;
         } catch (ThreadDeath t) {
             logger.warn("Caught ThreadDeath during test execution");
