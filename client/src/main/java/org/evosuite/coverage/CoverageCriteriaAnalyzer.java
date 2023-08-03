@@ -25,6 +25,7 @@ import org.evosuite.Properties.Criterion;
 import org.evosuite.TestGenerationContext;
 import org.evosuite.coverage.ambiguity.AmbiguityCoverageSuiteFitness;
 import org.evosuite.coverage.executionTime.ExecutionTimeSuiteFitness;
+import org.evosuite.coverage.executionTime.ExecutionRawTimeSuiteFitness;
 import org.evosuite.coverage.rho.RhoCoverageSuiteFitness;
 import org.evosuite.rmi.ClientServices;
 import org.evosuite.statistics.RuntimeVariable;
@@ -168,6 +169,8 @@ public class CoverageCriteriaAnalyzer {
                 return RuntimeVariable.OnlyBranchCoverage;
             case EXECUTIONTIME:
                 return RuntimeVariable.ExecutionTimeCoverage;
+            case EXECUTIONRAWTIME:
+                return RuntimeVariable.ExecutionRawTimeFinal;
             case METHODTRACE:
                 return RuntimeVariable.MethodTraceCoverage;
             case METHOD:
@@ -208,6 +211,7 @@ public class CoverageCriteriaAnalyzer {
         boolean privatem = false;
         boolean exceptionC = false;
         boolean executionTime = false;
+        boolean executionRawTime = false;
         boolean onlybranch = false;
 
         for (Properties.Criterion pc : criteria) {
@@ -238,6 +242,12 @@ public class CoverageCriteriaAnalyzer {
 
         if (!executionTime){
             Properties.Criterion[] newCriterion = new Criterion[]{Properties.Criterion.EXECUTIONTIME};
+            for (Properties.Criterion pc : newCriterion) {
+                analyzeCoverage(testSuite, pc, true);
+            }
+        }
+        if (!executionRawTime){
+            Properties.Criterion[] newCriterion = new Criterion[]{Properties.Criterion.EXECUTIONRAWTIME};
             for (Properties.Criterion pc : newCriterion) {
                 analyzeCoverage(testSuite, pc, true);
             }

@@ -34,6 +34,7 @@ import org.evosuite.coverage.branch.OnlyBranchCoverageSuiteFitness;
 import org.evosuite.coverage.cbranch.CBranchSuiteFitness;
 import org.evosuite.coverage.exception.ExceptionCoverageSuiteFitness;
 import org.evosuite.coverage.executionTime.ExecutionTimeSuiteFitness;
+import org.evosuite.coverage.executionTime.ExecutionRawTimeSuiteFitness;
 import org.evosuite.coverage.io.input.InputCoverageSuiteFitness;
 import org.evosuite.coverage.io.output.OutputCoverageSuiteFitness;
 import org.evosuite.coverage.line.LineCoverageSuiteFitness;
@@ -186,7 +187,8 @@ public class SearchStatistics implements Listener<ClientStateInformation> {
                 new BitstringPrivateMethodCoverageSequenceOutputVariableFactory());
         sequenceOutputVariableFactories.put(RuntimeVariable.ExceptionBitstringTimeline.name(),
                 new BitstringExceptionCoverageSequenceOutputVariableFactory());
-
+        sequenceOutputVariableFactories.put(RuntimeVariable.ExecutionRawTimeTimeline.name(),
+                new ExecutionRawTimeCoverageSequenceOutputVariableFactory());
 
         sequenceOutputVariableFactories.put(RuntimeVariable.ExecutionTimeTimeline.name(),
                 new ExecutionTimeCoverageSequenceOutputVariableFactory());
@@ -905,6 +907,22 @@ private static class BitstringExceptionCoverageSequenceOutputVariableFactory ext
             double a = 0;
             if (ArrayUtil.contains(Properties.CRITERION, Properties.Criterion.EXECUTIONTIME)){
                 a = 1.0 - individual.getCoverageInstanceOf(ExecutionTimeSuiteFitness.class);
+            }
+            return a;
+        }
+    }
+
+    private static class ExecutionRawTimeCoverageSequenceOutputVariableFactory extends SequenceOutputVariableFactory<Double> {
+
+        public ExecutionRawTimeCoverageSequenceOutputVariableFactory() {
+            super(RuntimeVariable.ExecutionRawTimeTimeline);
+        }
+
+        @Override
+        public Double getValue(TestSuiteChromosome individual) {
+            double a = 0;
+            if (ArrayUtil.contains(Properties.CRITERION, Properties.Criterion.EXECUTIONRAWTIME)){
+                a = individual.getCoverageInstanceOf(ExecutionRawTimeSuiteFitness.class);
             }
             return a;
         }
