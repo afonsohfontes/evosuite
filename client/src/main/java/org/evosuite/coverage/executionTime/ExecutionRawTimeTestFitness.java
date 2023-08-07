@@ -28,13 +28,6 @@ public abstract class ExecutionRawTimeTestFitness extends TestFitnessFunction {
     @Override
     public double getFitness(TestChromosome individual, ExecutionResult result){
 
-        long timeAverage = 0;
-        int validExecutions = 0;
-
-        if (result.hasTimeout()) {
-            return 1.0;
-        }
-
         return result.getExecutionTime();
     }
 

@@ -35,9 +35,6 @@ public class ExecutionRawTimeSuiteFitness extends TestSuiteFitnessFunction {
         List<ExecutionResult> results = runTestSuite(suite);
         long SuiteExecutionTime = 0;
         for (ExecutionResult result : results) {
-            if (result.hasTimeout()) {
-                continue;
-            }
             SuiteExecutionTime += result.getExecutionTime();
         }
         return SuiteExecutionTime;

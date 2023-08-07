@@ -32,6 +32,9 @@ import org.evosuite.coverage.exception.*;
 import org.evosuite.coverage.executionTime.ExecutionTimeFactory;
 import org.evosuite.coverage.executionTime.ExecutionTimeSuiteFitness;
 import org.evosuite.coverage.executionTime.ExecutionTimeTestFitness;
+import org.evosuite.coverage.executionTime.ExecutionRawTimeFactory;
+import org.evosuite.coverage.executionTime.ExecutionRawTimeSuiteFitness;
+import org.evosuite.coverage.executionTime.ExecutionRawTimeTestFitness;
 import org.evosuite.coverage.ibranch.IBranchFitnessFactory;
 import org.evosuite.coverage.ibranch.IBranchSuiteFitness;
 import org.evosuite.coverage.ibranch.IBranchTestFitness;
@@ -112,6 +115,8 @@ public class FitnessFunctions {
                 return new ReadabilitySuiteFitness();
             case EXECUTIONTIME:
                 return new ExecutionTimeSuiteFitness();
+            case EXECUTIONRAWTIME:
+                return new ExecutionRawTimeSuiteFitness();
             case ONLYBRANCH:
                 return new OnlyBranchCoverageSuiteFitness();
             case METHODTRACE:
@@ -176,6 +181,8 @@ public class FitnessFunctions {
                 return new ExceptionCoverageFactory();
             case EXECUTIONTIME:
                 return new ExecutionTimeFactory();
+            case EXECUTIONRAWTIME:
+                return new ExecutionRawTimeFactory();
             case ONLYBRANCH:
                 return new OnlyBranchCoverageFactory();
             case METHODTRACE:
@@ -242,6 +249,8 @@ public class FitnessFunctions {
                 throw new RuntimeException("No test fitness function defined for " + criterion.name());
             case EXECUTIONTIME:
                 return ExecutionTimeTestFitness.class;
+            case EXECUTIONRAWTIME:
+                return ExecutionRawTimeTestFitness.class;
             case ONLYBRANCH:
                 return OnlyBranchCoverageTestFitness.class;
             case METHODTRACE:
