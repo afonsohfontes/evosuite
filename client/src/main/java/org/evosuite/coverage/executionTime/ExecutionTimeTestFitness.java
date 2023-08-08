@@ -39,7 +39,7 @@ public abstract class ExecutionTimeTestFitness extends TestFitnessFunction {
         int validExecutions = 0;
 
         if (result.hasTimeout()) {
-            return 1.0;
+            //return 1.0;
         }
 
         timeAverage += result.getExecutionTime();
