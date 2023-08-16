@@ -254,27 +254,18 @@ public class CoverageCriteriaAnalyzer {
                 analyzeCoverage(testSuite, pc, true);
             }
         }
-        if (!onlybranch){
+        /*if (!onlybranch){
             Properties.Criterion[] newCriterion = new Criterion[]{Properties.Criterion.ONLYBRANCH};
             for (Properties.Criterion pc : newCriterion) {
                 analyzeCoverage(testSuite, pc, true);
             }
         }
-
-
-
+         */
     }
 
     public static void analyzeCoverage(TestSuiteChromosome testSuite, Properties.Criterion criterion) {
         analyzeCoverage(testSuite, criterion, true);
     }
-
-    public static void analyzeCoverageAfonso(TestSuiteChromosome testSuite, Properties.Criterion criterion, boolean recalculate) {
-
-
-
-    }
-
 
         private static void analyzeCoverage(TestSuiteChromosome testSuite, Properties.Criterion criterion, boolean recalculate) {
 
@@ -282,7 +273,7 @@ public class CoverageCriteriaAnalyzer {
                 double a = 1.0 - testSuite.getCoverageInstanceOf(ExecutionTimeSuiteFitness.class);
                 ClientServices.getInstance().getClientNode().trackOutputVariable(
                         RuntimeVariable.ExecutionTimeCoverage, a);
-            }else{
+            }
 
         TestSuiteChromosome testSuiteCopy = testSuite.clone();
 
@@ -372,7 +363,6 @@ public class CoverageCriteriaAnalyzer {
                     RuntimeVariable.AmbiguityScore, ag.getFitness(testSuite));
         }
             }
-    }
 
     public static RuntimeVariable getBitStringVariable(Properties.Criterion criterion) {
         switch (criterion) {
