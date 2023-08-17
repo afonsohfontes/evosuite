@@ -235,13 +235,15 @@ public class CoverageCriteriaAnalyzer {
                 analyzeCoverage(testSuite, pc, true);
             }
         }
-
+/*
         if (!executionTime){
             Properties.Criterion[] newCriterion = new Criterion[]{Properties.Criterion.EXECUTIONTIME};
             for (Properties.Criterion pc : newCriterion) {
                 analyzeCoverage(testSuite, pc, true);
             }
         }
+
+ */
         if (!exceptionC){
             Properties.Criterion[] newCriterion = new Criterion[]{Properties.Criterion.EXCEPTION};
             for (Properties.Criterion pc : newCriterion) {
