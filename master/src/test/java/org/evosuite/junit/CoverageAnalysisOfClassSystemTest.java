@@ -116,7 +116,7 @@ public class CoverageAnalysisOfClassSystemTest extends SystemTestBase {
 
         Properties.OUTPUT_VARIABLES = "TARGET_CLASS,criterion," +
                 RuntimeVariable.Coverage.name() + "," + RuntimeVariable.Covered_Goals + "," + RuntimeVariable.Total_Goals + "," +
-                RuntimeVariable.BranchCoverage + "," + RuntimeVariable.BranchCoverageBitString + "," +
+                RuntimeVariable.BranchCoverage + "," + RuntimeVariable.BranchCoverageBitString + "," + RuntimeVariable.OnlyBranchCoverageBitString + "," +
                 RuntimeVariable.LineCoverage + "," + RuntimeVariable.LineCoverageBitString;
         Properties.STATISTICS_BACKEND = StatisticsBackend.CSV;
 

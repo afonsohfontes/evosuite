@@ -63,10 +63,10 @@ public class PrivateMethodCoverageFitnessFunctionSystemTest extends SystemTestBa
         Properties.TEST_ARCHIVE = true;
         Properties.MINIMIZE = true;
 
-        String[] command = new String[]{"-generateSuite", "-class", targetClass, "-criterion=BRANCH:EXCEPTION", "-Dalgorithm=MONOTONIC_GA",
-                "-Doutput_variables=ExecutionTimeCoverage,ExecutionTimeTimeline,BranchCoverageBitString," +
-                        "BranchBitstringTimeline,OnlyBranchCoverageBitString,OnlyBranchBitstringTimeline," +
-                        "PrivateMethodCoverageTimeline,PrivateMethodCoverageBitString,PrivateMethodBitstringTimeline," +
+        String[] command = new String[]{"-generateSuite", "-class", targetClass, "-criterion=ONLYBRANCH:EXCEPTION", "-Dalgorithm=MONOTONIC_GA",
+                "-Doutput_variables=PrivateMethodCoverageTimeline," +
+                        "OnlyBranchCoverageBitString,OnlyBranchBitstringTimeline," +
+                        "PrivateMethodCoverageBitString,PrivateMethodBitstringTimeline," +
                         "ExceptionCoverageBitString,ExceptionBitstringTimeline,ExceptionCoverageTimeline" ,"-Dtimeline_interval=500"};
 
         Object result = evosuite.parseCommandLine(command);

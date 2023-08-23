@@ -256,13 +256,13 @@ public class CoverageCriteriaAnalyzer {
                 analyzeCoverage(testSuite, pc, true);
             }
         }
-        /*if (!onlybranch){
+        if (!onlybranch){
             Properties.Criterion[] newCriterion = new Criterion[]{Properties.Criterion.ONLYBRANCH};
             for (Properties.Criterion pc : newCriterion) {
                 analyzeCoverage(testSuite, pc, true);
             }
         }
-         */
+
     }
 
     public static void analyzeCoverage(TestSuiteChromosome testSuite, Properties.Criterion criterion) {
