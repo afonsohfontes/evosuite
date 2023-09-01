@@ -63,7 +63,7 @@ public class PrivateMethodCoverageFitnessFunctionSystemTest extends SystemTestBa
         Properties.TEST_ARCHIVE = true;
         Properties.MINIMIZE = true;
 
-        String[] command = new String[]{"-generateSuite", "-class", targetClass, "-criterion=ONLYBRANCH:EXCEPTION", "-Dalgorithm=MONOTONIC_GA",
+        String[] command = new String[]{"-generateSuite", "-class", targetClass, "-criterion=OUTPUT", "-Dalgorithm=MONOTONIC_GA",
                 "-Doutput_variables=PrivateMethodCoverageTimeline," +
                         "OnlyBranchCoverageBitString,OnlyBranchBitstringTimeline," +
                         "PrivateMethodCoverageBitString,PrivateMethodBitstringTimeline," +

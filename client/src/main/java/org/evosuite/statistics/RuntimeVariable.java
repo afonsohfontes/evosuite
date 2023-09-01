@@ -221,6 +221,7 @@ public enum RuntimeVariable {
     BranchBitstringTimeline,
     PrivateMethodBitstringTimeline,
     ExceptionBitstringTimeline,
+    OutputCoverageBitStringTimeLine,
     /**
      * Only the covered branches ratio.
      */

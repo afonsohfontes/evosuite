@@ -180,6 +180,8 @@ public class SearchStatistics implements Listener<ClientStateInformation> {
          */
         sequenceOutputVariableFactories.put(RuntimeVariable.BranchBitstringTimeline.name(),
                 new BitstringBranchCoverageSequenceOutputVariableFactory());
+        sequenceOutputVariableFactories.put(RuntimeVariable.OutputCoverageBitStringTimeLine.name(),
+                new BitstringOutputCoverageCoverageSequenceOutputVariableFactory());
         sequenceOutputVariableFactories.put(RuntimeVariable.OnlyBranchBitstringTimeline.name(),
                 new BitstringOnlyBranchCoverageSequenceOutputVariableFactory());
         sequenceOutputVariableFactories.put(RuntimeVariable.PrivateMethodBitstringTimeline.name(),
@@ -702,26 +704,31 @@ private static class BitstringExceptionCoverageSequenceOutputVariableFactory ext
 
     @Override
     public String getValue(TestSuiteChromosome individual) {
-        if (ArrayUtil.contains(Properties.CRITERION, Properties.Criterion.EXCEPTION)) {
-            TestSuiteChromosome testSuiteCopy = individual.clone();
+        try{
+            if (ArrayUtil.contains(Properties.CRITERION, Properties.Criterion.EXCEPTION)) {
+                TestSuiteChromosome testSuiteCopy = individual.clone();
 
-            TestFitnessFactory<? extends TestFitnessFunction> factory = FitnessFunctions.getFitnessFactory(Properties.Criterion.EXCEPTION);
+                TestFitnessFactory<? extends TestFitnessFunction> factory = FitnessFunctions.getFitnessFactory(Properties.Criterion.EXCEPTION);
 
 
-            List<? extends TestFitnessFunction> goals = factory.getCoverageGoals();
-            Collections.sort(goals);
+                List<? extends TestFitnessFunction> goals = factory.getCoverageGoals();
+                Collections.sort(goals);
 
-            StringBuffer buffer = new StringBuffer(goals.size());
-            for (TestFitnessFunction goal : goals) {
-                if (goal.isCoveredBy(testSuiteCopy)) {
-                    buffer.append("1");
-                } else {
-                    buffer.append("0");
+                StringBuffer buffer = new StringBuffer(goals.size());
+                for (TestFitnessFunction goal : goals) {
+                    if (goal.isCoveredBy(testSuiteCopy)) {
+                        buffer.append("1");
+                    } else {
+                        buffer.append("0");
+                    }
                 }
+                return buffer.toString();
+            }else{
+                return "";
             }
-            return buffer.toString();
-        }else{
-            return "";
+        } catch(Exception e){
+            String a = "0";
+            return a;
         }
     }
 }
@@ -734,48 +741,47 @@ private static class BitstringExceptionCoverageSequenceOutputVariableFactory ext
 
         @Override
         public String getValue(TestSuiteChromosome individual) {
-            TestSuiteChromosome testSuiteCopy = individual.clone();
-            TestFitnessFactory<? extends TestFitnessFunction> factory = FitnessFunctions.getFitnessFactory(Properties.Criterion.PRIVATEMETHOD);
-            List<? extends TestFitnessFunction> goals = factory.getCoverageGoals();
-            Collections.sort(goals);
-            for (TestChromosome test : testSuiteCopy.getTestChromosomes()) {
-                test.getTestCase().clearCoveredGoals();
-                test.clearCachedResults();
-            }
-            //TestGenerationContext.getInstance().resetContext();
-            //Properties.getInitializedTargetClass();
-
-            Properties.Criterion[] oldCriterion = Arrays.copyOf(Properties.CRITERION, Properties.CRITERION.length);
-            Properties.CRITERION = new Properties.Criterion[]{Properties.Criterion.BRANCH};
-
-            int covered = 0;
-            int notCovered = 0;
-            StringBuffer buffer = new StringBuffer(goals.size());
-            for (TestFitnessFunction goal : goals) {
-                if (goal.isCoveredBy(testSuiteCopy)) {
-                    covered++;
-                    buffer.append("1");
-                } else {
-                    notCovered++;
-                    buffer.append("0");
+            try{
+                TestSuiteChromosome testSuiteCopy = individual.clone();
+                TestFitnessFactory<? extends TestFitnessFunction> factory = FitnessFunctions.getFitnessFactory(Properties.Criterion.PRIVATEMETHOD);
+                List<? extends TestFitnessFunction> goals = factory.getCoverageGoals();
+                Collections.sort(goals);
+                for (TestChromosome test : testSuiteCopy.getTestChromosomes()) {
+                    test.getTestCase().clearCoveredGoals();
+                    test.clearCachedResults();
                 }
+                //TestGenerationContext.getInstance().resetContext();
+                //Properties.getInitializedTargetClass();
+
+                Properties.Criterion[] oldCriterion = Arrays.copyOf(Properties.CRITERION, Properties.CRITERION.length);
+                Properties.CRITERION = new Properties.Criterion[]{Properties.Criterion.BRANCH};
+
+                int covered = 0;
+                int notCovered = 0;
+                StringBuffer buffer = new StringBuffer(goals.size());
+                for (TestFitnessFunction goal : goals) {
+                    if (goal.isCoveredBy(testSuiteCopy)) {
+                        covered++;
+                        buffer.append("1");
+                    } else {
+                        notCovered++;
+                        buffer.append("0");
+                    }
+                }
+                double covered_d = (double)covered;
+                double notCovered_d = (double)notCovered;
+                //double branchFit = covered_d/(covered_d+notCovered_d);
+                //double bitString = Double.longBitsToDouble(new BigInteger(String.valueOf(buffer), 2).longValue());
+                // buffer is the coverage bit string for branch at this step
+                //System.out.printf("Covered goals: %d // Total Goals: %d // Fitness: %d", covered, (covered+notCovered), branchFit);
+                Properties.CRITERION = oldCriterion;
+                return buffer.toString();
+            } catch(Exception e){
+                String a = "0";
+                return a;
             }
-            double covered_d = (double)covered;
-            double notCovered_d = (double)notCovered;
-            //double branchFit = covered_d/(covered_d+notCovered_d);
-            //double bitString = Double.longBitsToDouble(new BigInteger(String.valueOf(buffer), 2).longValue());
-            // buffer is the coverage bit string for branch at this step
-            //System.out.printf("Covered goals: %d // Total Goals: %d // Fitness: %d", covered, (covered+notCovered), branchFit);
-            Properties.CRITERION = oldCriterion;
-            return buffer.toString();
         }
     }
-
-
-
-
-
-
 
 
 
@@ -788,42 +794,103 @@ private static class BitstringExceptionCoverageSequenceOutputVariableFactory ext
 
         @Override
         public String getValue(TestSuiteChromosome individual) {
+            try {
+                Properties.Criterion[] oldCriterion = Arrays.copyOf(Properties.CRITERION, Properties.CRITERION.length);
+                Properties.CRITERION = new Properties.Criterion[]{Properties.Criterion.ONLYBRANCH};
 
-            Properties.Criterion[] oldCriterion = Arrays.copyOf(Properties.CRITERION, Properties.CRITERION.length);
-            Properties.CRITERION = new Properties.Criterion[]{Properties.Criterion.ONLYBRANCH};
-
-            TestSuiteChromosome testSuiteCopy = individual.clone();
-            TestFitnessFactory<? extends TestFitnessFunction> factory = FitnessFunctions.getFitnessFactory(Properties.Criterion.ONLYBRANCH);
-            List<? extends TestFitnessFunction> goals = factory.getCoverageGoals();
-            Collections.sort(goals);
-            for (TestChromosome test : testSuiteCopy.getTestChromosomes()) {
-                test.getTestCase().clearCoveredGoals();
-                test.clearCachedResults();
-            }
-            //TestGenerationContext.getInstance().resetContext();
-            Properties.getInitializedTargetClass();
-
-
-            int covered = 0;
-            int notCovered = 0;
-            StringBuffer buffer = new StringBuffer(goals.size());
-            for (TestFitnessFunction goal : goals) {
-                if (goal.isCoveredBy(testSuiteCopy)) {
-                    covered++;
-                    buffer.append("1");
-                } else {
-                    notCovered++;
-                    buffer.append("0");
+                TestSuiteChromosome testSuiteCopy = individual.clone();
+                TestFitnessFactory<? extends TestFitnessFunction> factory = FitnessFunctions.getFitnessFactory(Properties.Criterion.ONLYBRANCH);
+                List<? extends TestFitnessFunction> goals = factory.getCoverageGoals();
+                Collections.sort(goals);
+                for (TestChromosome test : testSuiteCopy.getTestChromosomes()) {
+                    test.getTestCase().clearCoveredGoals();
+                    test.clearCachedResults();
                 }
+                //TestGenerationContext.getInstance().resetContext();
+                Properties.getInitializedTargetClass();
+
+
+                int covered = 0;
+                int notCovered = 0;
+                StringBuffer buffer = new StringBuffer(goals.size());
+                for (TestFitnessFunction goal : goals) {
+                    if (goal.isCoveredBy(testSuiteCopy)) {
+                        covered++;
+                        buffer.append("1");
+                    } else {
+                        notCovered++;
+                        buffer.append("0");
+                    }
+                }
+                //double covered_d = (double)covered;
+                //double notCovered_d = (double)notCovered;
+                //double branchFit = covered_d/(covered_d+notCovered_d);
+                //double bitString = Double.longBitsToDouble(new BigInteger(String.valueOf(buffer), 2).longValue());
+                // buffer is the coverage bit string for branch at this step
+                //System.out.printf("Covered goals: %d // Total Goals: %d // Fitness: %d", covered, (covered+notCovered), branchFit);
+                Properties.CRITERION = oldCriterion;
+                return buffer.toString();
+            } catch(Exception e){
+                String a = "0";
+                return a;
             }
-            double covered_d = (double)covered;
-            double notCovered_d = (double)notCovered;
-            //double branchFit = covered_d/(covered_d+notCovered_d);
-            //double bitString = Double.longBitsToDouble(new BigInteger(String.valueOf(buffer), 2).longValue());
-            // buffer is the coverage bit string for branch at this step
-            //System.out.printf("Covered goals: %d // Total Goals: %d // Fitness: %d", covered, (covered+notCovered), branchFit);
-            Properties.CRITERION = oldCriterion;
-            return buffer.toString();
+        }
+    }
+
+
+
+
+
+
+    private static class BitstringOutputCoverageCoverageSequenceOutputVariableFactory extends
+            SequenceOutputVariableFactory<String> {
+
+        public BitstringOutputCoverageCoverageSequenceOutputVariableFactory() {
+            super(RuntimeVariable.OutputCoverageBitStringTimeLine);
+        }
+
+        @Override
+        public String getValue(TestSuiteChromosome individual) {
+            try {
+                Properties.Criterion[] oldCriterion = Arrays.copyOf(Properties.CRITERION, Properties.CRITERION.length);
+                Properties.CRITERION = new Properties.Criterion[]{Properties.Criterion.OUTPUT};
+
+                TestSuiteChromosome testSuiteCopy = individual.clone();
+                TestFitnessFactory<? extends TestFitnessFunction> factory = FitnessFunctions.getFitnessFactory(Properties.Criterion.OUTPUT);
+                List<? extends TestFitnessFunction> goals = factory.getCoverageGoals();
+                Collections.sort(goals);
+                for (TestChromosome test : testSuiteCopy.getTestChromosomes()) {
+                    test.getTestCase().clearCoveredGoals();
+                    test.clearCachedResults();
+                }
+                //TestGenerationContext.getInstance().resetContext();
+                Properties.getInitializedTargetClass();
+
+
+                int covered = 0;
+                int notCovered = 0;
+                StringBuffer buffer = new StringBuffer(goals.size());
+                for (TestFitnessFunction goal : goals) {
+                    if (goal.isCoveredBy(testSuiteCopy)) {
+                        covered++;
+                        buffer.append("1");
+                    } else {
+                        notCovered++;
+                        buffer.append("0");
+                    }
+                }
+                //double covered_d = (double)covered;
+                //double notCovered_d = (double)notCovered;
+                //double branchFit = covered_d/(covered_d+notCovered_d);
+                //double bitString = Double.longBitsToDouble(new BigInteger(String.valueOf(buffer), 2).longValue());
+                // buffer is the coverage bit string for branch at this step
+                //System.out.printf("Covered goals: %d // Total Goals: %d // Fitness: %d", covered, (covered+notCovered), branchFit);
+                Properties.CRITERION = oldCriterion;
+                return buffer.toString();
+            } catch(Exception e){
+                String a = "0";
+                return a;
+            }
         }
     }
 
@@ -838,42 +905,47 @@ private static class BitstringExceptionCoverageSequenceOutputVariableFactory ext
         @Override
         public String getValue(TestSuiteChromosome individual) {
 
-            Properties.Criterion[] oldCriterion = Arrays.copyOf(Properties.CRITERION, Properties.CRITERION.length);
-            Properties.CRITERION = new Properties.Criterion[]{Properties.Criterion.BRANCH};
+            try{
+                Properties.Criterion[] oldCriterion = Arrays.copyOf(Properties.CRITERION, Properties.CRITERION.length);
+                Properties.CRITERION = new Properties.Criterion[]{Properties.Criterion.BRANCH};
 
-            TestSuiteChromosome testSuiteCopy = individual.clone();
-            TestFitnessFactory<? extends TestFitnessFunction> factory = FitnessFunctions.getFitnessFactory(Properties.Criterion.BRANCH);
-            List<? extends TestFitnessFunction> goals = factory.getCoverageGoals();
+                TestSuiteChromosome testSuiteCopy = individual.clone();
+                TestFitnessFactory<? extends TestFitnessFunction> factory = FitnessFunctions.getFitnessFactory(Properties.Criterion.BRANCH);
+                List<? extends TestFitnessFunction> goals = factory.getCoverageGoals();
 
-            Collections.sort(goals);
-            //for (TestChromosome test : testSuiteCopy.getTestChromosomes()) {
-            //    test.getTestCase().clearCoveredGoals();
-            //    test.clearCachedResults();
-            //}
-            //TestGenerationContext.getInstance().resetContext();
-            //Properties.getInitializedTargetClass();
+                Collections.sort(goals);
+                //for (TestChromosome test : testSuiteCopy.getTestChromosomes()) {
+                //    test.getTestCase().clearCoveredGoals();
+                //    test.clearCachedResults();
+                //}
+                //TestGenerationContext.getInstance().resetContext();
+                //Properties.getInitializedTargetClass();
 
 
-            int covered = 0;
-            int notCovered = 0;
-            StringBuffer buffer = new StringBuffer(goals.size());
-            for (TestFitnessFunction goal : goals) {
-                if (goal.isCoveredBy(testSuiteCopy)) {
-                    covered++;
-                    buffer.append("1");
-                } else {
-                    notCovered++;
-                    buffer.append("0");
+                int covered = 0;
+                int notCovered = 0;
+                StringBuffer buffer = new StringBuffer(goals.size());
+                for (TestFitnessFunction goal : goals) {
+                    if (goal.isCoveredBy(testSuiteCopy)) {
+                        covered++;
+                        buffer.append("1");
+                    } else {
+                        notCovered++;
+                        buffer.append("0");
+                    }
                 }
+                double covered_d = (double)covered;
+                double notCovered_d = (double)notCovered;
+                //double branchFit = covered_d/(covered_d+notCovered_d);
+                //double bitString = Double.longBitsToDouble(new BigInteger(String.valueOf(buffer), 2).longValue());
+                // buffer is the coverage bit string for branch at this step
+                //System.out.printf("Covered goals: %d // Total Goals: %d // Fitness: %d", covered, (covered+notCovered), branchFit);
+                Properties.CRITERION = oldCriterion;
+                return buffer.toString();
+            } catch(Exception e){
+                String a = "0";
+                return a;
             }
-            double covered_d = (double)covered;
-            double notCovered_d = (double)notCovered;
-            //double branchFit = covered_d/(covered_d+notCovered_d);
-            //double bitString = Double.longBitsToDouble(new BigInteger(String.valueOf(buffer), 2).longValue());
-            // buffer is the coverage bit string for branch at this step
-            //System.out.printf("Covered goals: %d // Total Goals: %d // Fitness: %d", covered, (covered+notCovered), branchFit);
-            Properties.CRITERION = oldCriterion;
-            return buffer.toString();
         }
     }
 

@@ -209,6 +209,7 @@ public class CoverageCriteriaAnalyzer {
         boolean exceptionC = false;
         boolean executionTime = false;
         boolean onlybranch = false;
+        boolean output = false;
 
         for (Properties.Criterion pc : criteria) {
             LoggingUtils.getEvoLogger().info("* Coverage analysis for criterion " + pc);
@@ -227,40 +228,71 @@ public class CoverageCriteriaAnalyzer {
             if (pc.name() == "ONLYBRANCH"){
                 onlybranch = true;
             }
+            if (pc.name() == "OUTPUT"){
+                output = true;
+            }
             analyzeCoverage(testSuite, pc, recalculate);
         }
-        if (!branch){
-            Properties.Criterion[] newCriterion = new Criterion[]{Properties.Criterion.BRANCH};
-            for (Properties.Criterion pc : newCriterion) {
-                analyzeCoverage(testSuite, pc, true);
+        try{
+            if (!branch){
+                Properties.Criterion[] newCriterion = new Criterion[]{Properties.Criterion.BRANCH};
+                for (Properties.Criterion pc : newCriterion) {
+                    analyzeCoverage(testSuite, pc, true);
+                }
             }
+        } catch (Exception e){
+            //nothing
         }
-/*
+        try{
         if (!executionTime){
             Properties.Criterion[] newCriterion = new Criterion[]{Properties.Criterion.EXECUTIONTIME};
             for (Properties.Criterion pc : newCriterion) {
                 analyzeCoverage(testSuite, pc, true);
             }
         }
+        } catch (Exception e){
+            //nothing
+        }
+        try{
 
- */
         if (!exceptionC){
             Properties.Criterion[] newCriterion = new Criterion[]{Properties.Criterion.EXCEPTION};
             for (Properties.Criterion pc : newCriterion) {
                 analyzeCoverage(testSuite, pc, true);
             }
         }
+        } catch (Exception e){
+            //nothing
+        }
+        try{
         if (!privatem){
             Properties.Criterion[] newCriterion = new Criterion[]{Properties.Criterion.PRIVATEMETHOD};
             for (Properties.Criterion pc : newCriterion) {
                 analyzeCoverage(testSuite, pc, true);
             }
         }
-        if (!onlybranch){
-            Properties.Criterion[] newCriterion = new Criterion[]{Properties.Criterion.ONLYBRANCH};
-            for (Properties.Criterion pc : newCriterion) {
-                analyzeCoverage(testSuite, pc, true);
+        } catch (Exception e){
+            //nothing
+        }
+        try{
+            if (!onlybranch){
+                Properties.Criterion[] newCriterion = new Criterion[]{Properties.Criterion.ONLYBRANCH};
+                for (Properties.Criterion pc : newCriterion) {
+                    analyzeCoverage(testSuite, pc, true);
+                }
             }
+        } catch (Exception e){
+            //nothing
+        }
+        try{
+            if (!output){
+                Properties.Criterion[] newCriterion = new Criterion[]{Properties.Criterion.OUTPUT};
+                for (Properties.Criterion pc : newCriterion) {
+                    analyzeCoverage(testSuite, pc, true);
+                }
+            }
+        } catch (Exception e){
+            //nothing
         }
 
     }

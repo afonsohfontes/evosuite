@@ -49,7 +49,7 @@ public class PrivateMethodCoverageSuiteFitness extends TestSuiteFitnessFunction 
     // Each test gets a set of distinct covered goals, these are mapped by branch id
     protected final Map<String, TestFitnessFunction> methodCoverageMap = new LinkedHashMap<>();
     protected final int totalMethods;
-
+    private static float nrOfPMCalls = 0;
     private final Set<String> toRemoveMethods = new LinkedHashSet<>();
 
     //coveredMethodsCount =
@@ -143,7 +143,7 @@ public class PrivateMethodCoverageSuiteFitness extends TestSuiteFitnessFunction 
      */
 
 
-    protected boolean analyzeTraces(List<ExecutionResult> results, Set<String> calledMethods) {
+    protected boolean analyzeTraces_NOT(List<ExecutionResult> results, Set<String> calledMethods) {
         boolean hasTimeoutOrTestException = false;
 
         for (ExecutionResult result : results) {
@@ -161,7 +161,7 @@ public class PrivateMethodCoverageSuiteFitness extends TestSuiteFitnessFunction 
                 TestFitnessFunction goal = this.methodCoverageMap.get(methodName);
 
                 double fit = goal.getFitness(test, result); // archive is updated by the TestFitnessFunction class
-
+                //nrOfPMCalls
                 if (fit == 0.0) {
                     calledMethods.add(methodName); // helper to count the number of covered goals
                    //this.toRemoveMethods.add(methodName); // goal to not be considered by the next iteration of the evolutionary algorithm
@@ -208,7 +208,7 @@ public class PrivateMethodCoverageSuiteFitness extends TestSuiteFitnessFunction 
     }
 
 
-    protected boolean analyzeTraces_TestSuiteLevel(List<ExecutionResult> results, Set<String> calledMethods) {
+    protected boolean analyzeTraces(List<ExecutionResult> results, Set<String> calledMethods) {
         boolean hasTimeoutOrTestException = false;
 
         Map<String, Double> callsCounter = new HashMap<String, Double>();
@@ -227,8 +227,6 @@ public class PrivateMethodCoverageSuiteFitness extends TestSuiteFitnessFunction 
 
             Set<String> coveredMethods = result.getTrace().getCoveredMethods();
             Map<String, Integer> coveredMethodsCount = result.getTrace().getMethodExecutionCount();
-
-
 
 
             for (String goalMethod : this.methodCoverageMap.keySet()) {
