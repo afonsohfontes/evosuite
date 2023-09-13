@@ -372,7 +372,9 @@ public class SearchStatistics implements Listener<ClientStateInformation> {
                 variables.put(variableName, new OutputVariable<>(variableName, ""));
             } else {
                 logger.error("No obtained value for output variable: " + variableName);
-                return null;
+                //return null;
+                // if variable doesn't exist, return an empty value instead
+                variables.put(variableName, new OutputVariable<>(variableName, ""));
             }
         }
 
